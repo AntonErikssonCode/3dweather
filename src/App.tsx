@@ -3,7 +3,7 @@ import logo from "./logo.svg";
 import "./App.css";
 import CanvasMain from "./components/CanvasMain";
 import { setInterval } from "timers/promises";
-
+import weatherConfig from "./weatherConfig";
 function App() {
   const [weatherEndpoint, setWeatherEndpoint] = useState(
     "https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/16.158/lat/58.5812/data.json"
@@ -21,35 +21,7 @@ function App() {
   const [pos, setPos] = useState({ longitude: "0", latitude: "0" });
   const [currentHour, setCurrentHour] = useState<number>(0);
 
-  const weatherSymbols = {
-    1: "Clear sky",
-    2: "Nearly clear sky",
-    3: "Variable cloudiness",
-    4: "Halfclear sky",
-    5: "Cloudy sky",
-    6: "Overcast",
-    7: "Fog",
-    8: "Light rain showers",
-    9: "Moderate rain showers",
-    10: "Heavy rain showers",
-    11: "Thunderstorm",
-    12: "Light sleet showers",
-    13: "Moderate sleet showers",
-    14: "Heavy sleet showers",
-    15: "Light snow showers",
-    16: "Moderate snow showers",
-    17: "Heavy snow showers",
-    18: "Light rain",
-    19: "Moderate rain",
-    20: "Heavy rain",
-    21: "Thunder",
-    22: "Light sleet",
-    23: "Moderate sleet",
-    24: "Heavy sleet",
-    25: "Light snowfall",
-    26: "Moderate snowfall",
-    27: "Heavy snowfall",
-  };
+  
 
   useEffect(() => {
     setWeatherEndpoint(
@@ -166,9 +138,9 @@ function App() {
       );
 
       setWeatherData({
-        temp: temp.values[0],
-        windDirection: windDirection.values[0],
-        symbol: symbol.values[0],
+        temp: parseInt(temp.values[0]),
+        windDirection: parseInt(windDirection.values[0]),
+        symbol: (symbol.values[0]),
       });
     } catch (error: any) {
       console.error("Error:", error.message);
