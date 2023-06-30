@@ -4,9 +4,7 @@ import "./App.css";
 import CanvasMain from "./components/CanvasMain";
 import { setInterval } from "timers/promises";
 
-
 function App() {
-  console.dir("run")
   const [weatherEndpoint, setWeatherEndpoint] = useState(
     "https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/16.158/lat/58.5812/data.json"
   ); // SMHI NORRKÖPING
@@ -21,6 +19,8 @@ function App() {
   });
   const [sunData, setSunData] = useState<any>({});
   const [pos, setPos] = useState({ longitude: "0", latitude: "0" });
+  const [currentHour, setCurrentHour] = useState<number>(0);
+
   const weatherSymbols = {
     1: "Clear sky",
     2: "Nearly clear sky",
@@ -51,15 +51,13 @@ function App() {
     27: "Heavy snowfall",
   };
 
-    useEffect(() => {
+  useEffect(() => {
     setWeatherEndpoint(
       `https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/${pos.longitude}/lat/${pos.latitude}/data.json`
     );
     setSunEndpoint(
       `https://api.sunrisesunset.io/json?lat=${pos.latitude}&lng=${pos.longitude}&date=today`
     );
-    console.dir(pos)
-
   }, [pos]);
 
   // Get inital position
@@ -73,15 +71,14 @@ function App() {
     // Clear the interval when the component is unmounted or the dependencies change
     return () => clearInterval(interval);
   }, []);
-  
-  function updateStates(){
+  function updateStates() {
     if ("geolocation" in navigator) {
       // Geolocation is supported
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const latitude = position.coords.latitude.toString().slice(0, -1);
           const longitude = position.coords.longitude.toString().slice(0, -1);
-          
+
           const newWeatherEndpoint = `https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/${longitude}/lat/${latitude}/data.json`;
           const newSunEnpoint = `https://api.sunrisesunset.io/json?lat=${latitude}&lng=${longitude}&date=today`;
 
@@ -103,7 +100,7 @@ function App() {
     }
   }
 
- /*  useEffect(() => {
+  /*  useEffect(() => {
     console.dir(" ")
 
 
@@ -136,7 +133,7 @@ function App() {
       ,
       { value: seconds },
     ] = formatter.formatToParts(now);
-
+    setCurrentHour(parseInt(hours));
     const newString = `${year}-${month}-${day}T${hours}:00:00Z`;
     return newString;
   }
@@ -178,6 +175,19 @@ function App() {
     }
   };
 
+  function convertToRealTime(text: string): number | null {
+    const splitArray = text.split(":");
+    let timeValue;
+    if (splitArray.length > 0) {
+      timeValue = parseInt(splitArray[0]);
+      if (text.includes("PM")) {
+        timeValue = 12 + timeValue;
+      }
+      return timeValue;
+    }
+    return null;
+  }
+
   const fetchSunInfo = async (sunEndpoint: string) => {
     try {
       const response = await fetch(sunEndpoint);
@@ -186,17 +196,30 @@ function App() {
       }
       const data = await response.json();
 
-      console.dir(data.results);
-      setSunData(data.results);
+      const dawn = convertToRealTime(data.results.dawn);
+      const sunrise = convertToRealTime(data.results.sunrise);
+      const dayLength = convertToRealTime(data.results.day_length);
+      const sunset = convertToRealTime(data.results.sunset);
+      const dusk = convertToRealTime(data.results.dusk);
+
+  
+      setSunData({
+        dawn: dawn,
+        sunrise: sunrise,
+        dayLength: dayLength,
+        sunset: sunset,
+        dusk: dusk,
+        nightLength: dayLength !== null ? 24 - dayLength : null,
+      });
     } catch (error: any) {
       console.error("Error:", error.message);
     }
   };
 
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
-    <CanvasMain sunData={sunData} weatherData={weatherData}/>
-  </div>
+    <div style={{ width: "100vw", height: "100vh" }}>
+       <CanvasMain sunData={sunData} weatherData={weatherData} currentHour={currentHour}/>
+    </div>
   );
 }
 

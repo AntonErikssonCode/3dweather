@@ -6,11 +6,12 @@ import { Scale } from "tone";
 interface Props {
   sunData: any;
   weatherData: any;
+  currentHour: number
 }
 
 const Spotlight: React.FC = () => {
   const spotlightGroupRef = useRef<THREE.Group>(null);
-  const scale = 1;
+  const scale = 1.4;
   const [sunColor, setSunColor] = useState("rgba(235, 235, 235, 0.354)");
   const updateSpotlightPosition = (degree: number) => {
     const radius = 25;
@@ -23,10 +24,11 @@ const Spotlight: React.FC = () => {
     }
   };
 
+
   useFrame(() => {
-    updateSpotlightPosition(45 ); // Example: 90 degrees
+    updateSpotlightPosition(15 ); // Example: 90 degrees
   });
-  
+
   return (
     <group ref={spotlightGroupRef}>
       <spotLight angle={0.4} penumbra={1} castShadow position={[0, 0, 0]}  visible color={sunColor}/>
@@ -99,15 +101,33 @@ const Spotlight: React.FC = () => {
 const CanvasMain: React.FC<Props> = (props: Props) => {
   const sun = props.sunData;
   const weather = props.weatherData;
+  const currentHour = props.currentHour;
+
   console.dir(sun);
   console.dir(weather);
+  console.dir(currentHour);
+
+
   return (
     <Canvas style={{ background: "black" }} shadows shadow-map={2048}>
             <fog attach="fog" args={["black", 25, 100]} />
       <ambientLight intensity={0.1} />
       <Spotlight />
       <mesh castShadow>
-        <boxGeometry args={[1, 1, 1]} />
+        <boxGeometry args={[1 , 1, 1]} />
+        <meshPhysicalMaterial color="white" metalness={0.5} roughness={0.5} />
+      </mesh>
+
+      <mesh castShadow  position={[1, 0, 1]}>
+        <sphereGeometry args={[0.5, 20,20]} />
+        <meshPhysicalMaterial color="white" metalness={0.5} roughness={0.5} />
+      </mesh>
+      <mesh castShadow  position={[0, 0, -2]}>
+        <coneGeometry args={[0.5, 1, 30]} />
+        <meshPhysicalMaterial color="white" metalness={0.5} roughness={0.5} />
+      </mesh>
+      <mesh castShadow  position={[-2, 0, 1]} rotation={[-Math.PI / 2, 0, 0]}>
+        <cylinderGeometry args={[0.5, 0.5, 1]} />
         <meshPhysicalMaterial color="white" metalness={0.5} roughness={0.5} />
       </mesh>
       <mesh
