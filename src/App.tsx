@@ -123,6 +123,7 @@ function App() {
       const currentWeather = data.timeSeries.find(
         (obj: any) => obj.validTime === currentTime
       );
+      console.log(data)
 
       // t = Degree
       // wd = Wind Direction
