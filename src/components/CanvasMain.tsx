@@ -18,7 +18,7 @@ interface SpotlightProps {
 }
 const Spotlight: React.FC<SpotlightProps> = ({ sunAndMoon }) => {
   const spotlightGroupRef = useRef<THREE.Group>(null);
-  const scale = 3;
+  const scale = 7;
   const colors = {
     sunColors: [
       "rgb(255, 0, 0)",
@@ -39,7 +39,7 @@ const Spotlight: React.FC<SpotlightProps> = ({ sunAndMoon }) => {
 
   const [lightColor, setLightColor] = useState("rgba(235, 235, 235, 0.554)");
   const updateSpotlightPosition = (degree: number) => {
-    const radius = 30 * scale;
+    const radius = 20 * scale;
 
     const posX = Math.cos((degree * Math.PI) / 180) * radius;
     const posY = Math.sin((degree * Math.PI) / 180) * radius;
@@ -136,6 +136,7 @@ const Spotlight: React.FC<SpotlightProps> = ({ sunAndMoon }) => {
 
 interface CloudProps {
   weather: any;
+  currentWeather: any;
 }
 function getRandomInt(min: number, max: number): number {
   // Add 1 to the difference between max and min
@@ -144,19 +145,69 @@ function getRandomInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+
+function Precipitation(props: CloudProps) {
+  const xPos = 0;
+  const initialYPos = 0;
+  const zPos = 0;
+  const meshRef = useRef<THREE.Mesh>(null);
+  const yPosition = useRef(initialYPos);
+
+  const speed = 0.5;
+  const delayTime = getRandomInt(0, 7000);
+  useEffect(() => {
+    // Delay the initial update of the precipitation's position
+    const delay = delayTime;
+    const timer = setTimeout(() => {
+      yPosition.current = initialYPos;
+    }, delay);
+
+    return () => clearTimeout(timer); // Clean up the timer when the component unmounts
+  }, []);
+
+  useFrame(() => {
+    // Animate the Y position of the precipitation
+    yPosition.current -= speed; // Adjust the animation speed as needed
+
+    if (meshRef.current) {
+      meshRef.current.position.set(xPos, yPosition.current, zPos);
+      if (yPosition.current <= -70) { // Adjust the threshold as needed
+        yPosition.current = initialYPos;
+      }
+    }
+  });
+
+  return (
+    <mesh ref={meshRef}>
+      <sphereGeometry args={[0.6, 5, 5]} />
+      <meshPhysicalMaterial
+        color={"blue"}
+        metalness={0.5}
+        roughness={0.5}
+        emissive={"blue"}
+        emissiveIntensity={1}
+        opacity={0.4}
+        transparent
+      />
+    </mesh>
+  );
+}
+
+
 function Cloud(props: CloudProps) {
   const weather = props.weather;
   // Cloud intensity 0.6
   // Cloud true
   const cloudColor = "#fff";
-  const cloudScale = getRandomInt(2,6);;
-  const xPos = getRandomInt(-10,10);
-  const yPos = getRandomInt(50,65);
-  const zPos = getRandomInt(-10,10);
+  const cloudScale = getRandomInt(3, 6);
+  const xPos = getRandomInt(-10, 10);
+  const yPos = getRandomInt(50, 65);
+  const zPos = getRandomInt(-10, 10);
   const position = new Vector3(xPos, yPos, zPos);
+
   return (
-    <group>
-      <mesh position={position}>
+    <group position={position}>
+      <mesh>
         <sphereGeometry args={[1 * cloudScale, 20, 20]} />
         <meshPhysicalMaterial
           color={cloudColor}
@@ -167,7 +218,7 @@ function Cloud(props: CloudProps) {
           opacity={1}
         />
       </mesh>
-      <mesh position={position}>
+      <mesh>
         <sphereGeometry args={[2 * cloudScale, 20, 20]} />
         <meshPhysicalMaterial
           color={cloudColor}
@@ -179,34 +230,42 @@ function Cloud(props: CloudProps) {
           transparent
         />
       </mesh>
+      <Precipitation weather={weather} currentWeather={props.currentWeather} />
     </group>
   );
 }
 
 function CloudCluster(props: CloudProps) {
   const weather = props.weather;
-  const numberOfClouds  = getRandomInt(1,20);
-  const xPos = getRandomInt(-80,80);
-  const yPos = getRandomInt(0,0);
-  const zPos = getRandomInt(-80,80);
+  const numberOfClouds = getRandomInt(1, 25);
+  const xPos = getRandomInt(-80, 80);
+  const yPos = getRandomInt(0, 0);
+  const zPos = getRandomInt(-80, 80);
   const position = new Vector3(xPos, yPos, zPos);
 
   const clouds = Array.from({ length: numberOfClouds }, (_, index) => (
-    <Cloud key={index} weather={weather} />
+    <Cloud
+      key={index}
+      weather={weather}
+      currentWeather={props.currentWeather}
+    />
   ));
   return <group position={position}>{clouds}</group>;
 }
-
 
 const CanvasMain: React.FC<Props> = (props: Props) => {
   const sun = props.sunData;
   const weather = props.weatherData;
   const currentHour = props.currentHour;
-  console.dir(sun);
+  /*   console.dir(sun);
   console.dir(weather);
-  console.dir(currentHour);
+  console.dir(currentHour); */
   const weatherSymbol = weather.symbol as keyof typeof weatherConfig;
-
+    const currentWeatherConfig = weatherConfig[weatherSymbol];
+  
+/*   const currentWeatherConfig = weatherConfig["11"];
+ */
+console.dir(currentWeatherConfig)
   const [sunAndMoon, setSunAndMoon] = useState({ type: "sun", position: 0 });
   const [day, setDay] = useState(true);
   const [bg, setBg] = useState("white");
@@ -227,7 +286,6 @@ const CanvasMain: React.FC<Props> = (props: Props) => {
     const moonMoveDegree = 180 / sun.nightLength;
     const sunMoveDegreeTotal = sunMoveDegree * (currentHour - sun.sunrise);
     const moonMoveDegreeTotal = moonMoveDegree * (currentHour - sun.dusk);
-    console.dir(moonMoveDegreeTotal);
 
     if (currentHour >= sun.sunrise && currentHour <= sun.dusk) {
       setSunAndMoon({ type: "sun", position: sunMoveDegreeTotal });
@@ -238,13 +296,23 @@ const CanvasMain: React.FC<Props> = (props: Props) => {
     }
   }, [currentHour, sun, weather]);
 
-  console.dir(weatherConfig[weatherSymbol].cloudIntensity)
+  const numberOfCloudCLusters = Math.ceil(
+    currentWeatherConfig.cloudIntensity * 20
+  );
+  console.dir(numberOfCloudCLusters);
+  const totalCloudClusters = Array.from(
+    { length: numberOfCloudCLusters },
+    (_, index) => (
+      <CloudCluster weather={weather} currentWeather={currentWeatherConfig} />
+    )
+  );
+
   return (
     <Canvas
       style={
         day
-          ? { background: weatherConfig[weatherSymbol].dayColor }
-          : { background: weatherConfig[weatherSymbol].nightColor }
+          ? { background: currentWeatherConfig.dayColor }
+          : { background: currentWeatherConfig.nightColor }
       } // Sky Color
       shadows
       shadow-map={2048}
@@ -258,39 +326,30 @@ const CanvasMain: React.FC<Props> = (props: Props) => {
        */}{" "}
       <ambientLight intensity={0.2} />
       <Spotlight sunAndMoon={sunAndMoon} />
-  
       <mesh castShadow position={[1, 10, 1]}>
         <sphereGeometry args={[10, 20, 20]} />
         <meshPhysicalMaterial color="white" metalness={0.5} roughness={0.5} />
       </mesh>
-      
-      <mesh
-   
-        position={[0, -200.5, 1]}
-        receiveShadow
-      >
-        <sphereGeometry args={[200, 50, 50]} />
+      <mesh position={[0, -400, 1]} receiveShadow>
+        <sphereGeometry args={[400, 50, 50]} />
         <meshStandardMaterial
           color={
-            "grey"
-            /*  day
+            "white"
+            /*   day
               ? weatherConfig[weatherSymbol].dayColor
               : weatherConfig[weatherSymbol].nightColor */
           }
           side={THREE.DoubleSide}
         />
       </mesh>
-<CloudCluster weather={weather}/>
-
-
-
+      {totalCloudClusters}
       <Shadow />
       <OrbitControls
         target={new Vector3(0, 30, 0)}
         minDistance={80} // Set the minimum distance the camera can be zoomed out
         maxDistance={140} // Set the maximum distance the camera can be zoomed in
         minPolarAngle={Math.PI / 3} // Set the minimum polar angle (vertical rotation) in radians
-        maxPolarAngle={Math.PI / 2} // Set the maximum polar angle (vertical rotation) in radians
+        maxPolarAngle={Math.PI / 1.8} // Set the maximum polar angle (vertical rotation) in radians
       />
     </Canvas>
   );
