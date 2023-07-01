@@ -3,9 +3,14 @@ import { Canvas, useFrame, useLoader } from "react-three-fiber";
 import { OrbitControls, Plane, Shadow, useHelper } from "@react-three/drei";
 import { PerspectiveCamera, Euler, Vector3 } from "three";
 import weatherConfig from "../weatherConfig";
-import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";
 import * as THREE from "three"; // Add this import statement
 import { wait } from "@testing-library/user-event/dist/utils";
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+/* import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
+ *//* import { OBJLoader as LoadersGLOBJLoader } from '@loaders.gl/obj';
+ import { Loader } from '@loaders.gl/core'; */
+ import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";
+ import { Mesh } from 'three';
 
 interface Props {
   sunData: any;
@@ -137,6 +142,11 @@ const Spotlight: React.FC<SpotlightProps> = ({ sunAndMoon }) => {
 interface CloudProps {
   weather: any;
   currentWeather: any;
+  color: string;
+}
+interface PrecipitationProps {
+  weather: any;
+  currentWeather: any;
 }
 function getRandomInt(min: number, max: number): number {
   // Add 1 to the difference between max and min
@@ -144,17 +154,111 @@ function getRandomInt(min: number, max: number): number {
   // Floor the result to get an integer within the range
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+function getRandomIntNotFloor(min: number, max: number): number {
+  // Add 1 to the difference between max and min
+  // Multiply it by Math.random()
+  // Floor the result to get an integer within the range
+  return Math.random() * (max - min) + min;
+}
 
+function triangleWave(t:number, period:number) {
+  const normalizedTime = t / period;
+  const fractionalPart = normalizedTime - Math.floor(normalizedTime);
+  return fractionalPart < 0.5 ? fractionalPart * 4 - 1 : (1 - fractionalPart) * 4 - 1;
+}
 
-function Precipitation(props: CloudProps) {
+interface LightningProps {}
+
+const Lightning: React.FC<LightningProps> = () => {
   const xPos = 0;
   const initialYPos = 0;
   const zPos = 0;
   const meshRef = useRef<THREE.Mesh>(null);
   const yPosition = useRef(initialYPos);
-
-  const speed = 0.5;
   const delayTime = getRandomInt(0, 7000);
+const speed = 2;
+const rnd = getRandomIntNotFloor(0, 1); //0.3
+  const spawnLightning = rnd > 0.99? true : false;
+
+ useEffect(() => {
+    // Delay the initial update of the precipitation's position
+    const delay = delayTime;
+    const timer = setTimeout(() => {
+      yPosition.current = initialYPos;
+    }, delay);
+
+    return () => clearTimeout(timer); // Clean up the timer when the component unmounts
+  }, []);
+  useFrame(() => {
+    // Animate the Y position of the precipitation
+    yPosition.current -= speed; // Adjust the animation speed as needed
+
+    if (meshRef.current) {
+      meshRef.current.position.set(5* triangleWave(yPosition.current/4, 10), yPosition.current, zPos);
+      if (yPosition.current <= -70) {
+        // Adjust the threshold as needed
+        yPosition.current = initialYPos;
+      }
+    }
+  });
+  if(spawnLightning){
+    return (
+      <mesh ref={meshRef}>
+        <sphereGeometry args={[2,10,10]} />
+        <meshPhysicalMaterial
+          color="yellow"
+          metalness={0.5}
+          roughness={0.5}
+          emissive="yellow"
+          emissiveIntensity={1}
+          opacity={1}
+          transparent
+        />
+      </mesh>
+    );
+
+  }
+  return null;
+};
+
+
+
+
+function Precipitation(props: PrecipitationProps) {
+  const xPos = 0;
+  const initialYPos = 0;
+  const zPos = 0;
+  const meshRef = useRef<THREE.Mesh>(null);
+  const yPosition = useRef(initialYPos);
+  const delayTime = getRandomInt(0, 7000);
+
+  const rainIntensity = props.currentWeather.rainIntensity; //0.8
+  const snowIntensity = props.currentWeather.snowIntensity; //0.8
+  const total = rainIntensity + snowIntensity; // 1.6
+  const rnd = getRandomIntNotFloor(0, total); //0.3
+  const precipitationType = rnd <= rainIntensity ? "rain" : "snow";
+
+  const precipitationConfig = {
+    rain: {
+      speed: 0.6,
+      color: "#618cdb",
+      opacity: rainIntensity * 2,
+      intensity: rainIntensity,
+    },
+    snow: {
+      speed: 0.2,
+      color: "white",
+      opacity: snowIntensity * 2,
+      intensity: snowIntensity,
+    },
+  };
+
+  const spawnPerciption =
+    getRandomIntNotFloor(0, 1) <=
+    precipitationConfig[precipitationType].intensity
+      ? true
+      : false;
+
   useEffect(() => {
     // Delay the initial update of the precipitation's position
     const delay = delayTime;
@@ -167,41 +271,43 @@ function Precipitation(props: CloudProps) {
 
   useFrame(() => {
     // Animate the Y position of the precipitation
-    yPosition.current -= speed; // Adjust the animation speed as needed
+    yPosition.current -= precipitationConfig[precipitationType].speed; // Adjust the animation speed as needed
 
     if (meshRef.current) {
       meshRef.current.position.set(xPos, yPosition.current, zPos);
-      if (yPosition.current <= -70) { // Adjust the threshold as needed
+      if (yPosition.current <= -70) {
+        // Adjust the threshold as needed
         yPosition.current = initialYPos;
       }
     }
   });
-
-  return (
-    <mesh ref={meshRef}>
-      <sphereGeometry args={[0.6, 5, 5]} />
-      <meshPhysicalMaterial
-        color={"blue"}
-        metalness={0.5}
-        roughness={0.5}
-        emissive={"blue"}
-        emissiveIntensity={1}
-        opacity={0.4}
-        transparent
-      />
-    </mesh>
-  );
+  if (spawnPerciption) {
+    return (
+      <mesh ref={meshRef}>
+        <sphereGeometry args={[0.8, 5, 5]} />
+        <meshPhysicalMaterial
+          color={precipitationConfig[precipitationType].color}
+          metalness={0.5}
+          roughness={0.5}
+          emissive={precipitationConfig[precipitationType].color}
+          emissiveIntensity={1}
+          opacity={precipitationConfig[precipitationType].opacity}
+          transparent
+        />
+      </mesh>
+    );
+  }
+  return null;
 }
-
 
 function Cloud(props: CloudProps) {
   const weather = props.weather;
-  // Cloud intensity 0.6
-  // Cloud true
-  const cloudColor = "#fff";
-  const cloudScale = getRandomInt(3, 6);
+  const currentWeather = props.currentWeather;
+
+  const cloudColor = currentWeather.cloudColor;
+  const cloudScale = getRandomInt(4, 7);
   const xPos = getRandomInt(-10, 10);
-  const yPos = getRandomInt(50, 65);
+  const yPos = getRandomInt(50, 75);
   const zPos = getRandomInt(-10, 10);
   const position = new Vector3(xPos, yPos, zPos);
 
@@ -231,9 +337,13 @@ function Cloud(props: CloudProps) {
         />
       </mesh>
       <Precipitation weather={weather} currentWeather={props.currentWeather} />
+      {currentWeather.thunder?<Lightning/>: null}
     </group>
   );
 }
+
+
+
 
 function CloudCluster(props: CloudProps) {
   const weather = props.weather;
@@ -248,24 +358,75 @@ function CloudCluster(props: CloudProps) {
       key={index}
       weather={weather}
       currentWeather={props.currentWeather}
+      color={"white"}
     />
   ));
   return <group position={position}>{clouds}</group>;
+}
+function Fog(props: {}) {
+  // Cloud intensity 0.6
+  // Cloud true
+  const fogColor = "grey";
+  const fogScale = getRandomInt(5, 15);
+  const xPos = getRandomInt(-80, 80);
+  const yPos = getRandomInt(-7.5, 7.5   );
+  const zPos = getRandomInt(-80, 80);
+  const position = new Vector3(xPos, yPos, zPos);
+
+  return (
+    <group position={position}>
+   
+      <mesh>
+        <sphereGeometry args={[2 * fogScale, 20, 20]} />
+        <meshPhysicalMaterial
+          color={fogColor}
+/*           metalness={0.5}
+          roughness={0.5} */
+          emissive={fogColor}
+          emissiveIntensity={1}
+          opacity={0.5}
+          transparent
+        />
+      </mesh>
+    
+    </group>
+  );
+}
+function FogCluster(props: {}) {
+  const fogScale = getRandomInt(4, 7);
+
+  const numberOfFogs = getRandomInt(30, 70);
+  const xPos = getRandomInt(0, 0);
+  const yPos = getRandomInt(0, 0);
+  const zPos = getRandomInt(0, 0);
+  const position = new Vector3(xPos, yPos, zPos);
+  const fogColor = "grey";
+
+  const fogs = Array.from({ length: numberOfFogs }, (_, index) => (
+    <group position={position}>
+     <Fog/>
+    </group>
+  ));
+  return (
+    <group position={position}>
+     {fogs}
+    </group>
+  );
 }
 
 const CanvasMain: React.FC<Props> = (props: Props) => {
   const sun = props.sunData;
   const weather = props.weatherData;
-  const currentHour = props.currentHour;
+  const currentHour = props.currentHour-5;
   /*   console.dir(sun);
   console.dir(weather);
   console.dir(currentHour); */
-  const weatherSymbol = weather.symbol as keyof typeof weatherConfig;
+      const weatherSymbol = weather.symbol as keyof typeof weatherConfig;
     const currentWeatherConfig = weatherConfig[weatherSymbol];
-  
+
 /*   const currentWeatherConfig = weatherConfig["11"];
  */
-console.dir(currentWeatherConfig)
+  console.dir(currentWeatherConfig);
   const [sunAndMoon, setSunAndMoon] = useState({ type: "sun", position: 0 });
   const [day, setDay] = useState(true);
   const [bg, setBg] = useState("white");
@@ -303,9 +464,26 @@ console.dir(currentWeatherConfig)
   const totalCloudClusters = Array.from(
     { length: numberOfCloudCLusters },
     (_, index) => (
-      <CloudCluster weather={weather} currentWeather={currentWeatherConfig} />
+      <CloudCluster
+        weather={weather}
+        currentWeather={currentWeatherConfig}
+        color="white"
+      />
     )
   );
+
+  const CatModel: React.FC = () => {
+    const obj = useLoader(OBJLoader, './assets/cat.obj');
+  
+    obj.traverse((child: Object) => {
+      if (child instanceof Mesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+    return <primitive object={obj} scale={0.4} castShadow />;
+  };
+
 
   return (
     <Canvas
@@ -322,14 +500,20 @@ console.dir(currentWeatherConfig)
         fov: cameraFov,
       }}
     >
-      {/*       <fog attach="fog" args={["rgba(80, 80, 80, 1)", 25, 75]} />
-       */}{" "}
+      
+           {currentWeatherConfig.fog ? (
+        <><FogCluster />
+          
+          <fog attach="fog" args={["rgba(80, 80, 80, 0.3)", 100, 300]} />
+        </>
+      ) : null}
       <ambientLight intensity={0.2} />
       <Spotlight sunAndMoon={sunAndMoon} />
-      <mesh castShadow position={[1, 10, 1]}>
+     {/*  <mesh castShadow position={[1, 10, 1]}>
         <sphereGeometry args={[10, 20, 20]} />
         <meshPhysicalMaterial color="white" metalness={0.5} roughness={0.5} />
-      </mesh>
+      </mesh> */}
+      <CatModel/>
       <mesh position={[0, -400, 1]} receiveShadow>
         <sphereGeometry args={[400, 50, 50]} />
         <meshStandardMaterial
