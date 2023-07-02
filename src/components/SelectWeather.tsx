@@ -22,7 +22,7 @@ function SelectWeather({ handleSelectWeather, handleClick,  selectedWeather, exp
    
       {expanded && (<>
          <div  onClick={()=>handleSelectWeather(27)}>
-         <p  className={`weather-menu-item-p-with-margin ${selectedWeather==27 ? 'active' : ''}`} >Select Current</p>
+         <p  className={`weather-menu-item-p-with-margin ${selectedWeather==27 ? 'active' : ''}`} >Current Weather</p>
          <div className="divider"></div>
        </div>
         <div className='weather-menu'>
