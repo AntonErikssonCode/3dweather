@@ -396,7 +396,7 @@ function Cloud(props: CloudProps) {
   const cloudColor = currentWeather.cloudColor;
   const cloudScale = getRandomInt(3, 15);
   const xPos = getRandomInt(-10, 10);
-  const yPos = getRandomInt(80, 95);
+  const yPos = getRandomInt(75, 105);
   const zPos = getRandomInt(-10, 10);
   const position = new Vector3(xPos, yPos, zPos);
   const cloudOpacity = getRandomInt(0.7, 0.9);
@@ -435,7 +435,7 @@ function CloudCluster(props: CloudProps) {
   const weather = props.weather;
   const numberOfClouds = getRandomInt(1, 20);
   const xPos = getRandomInt(-100, 100);
-  const yPos = getRandomInt(-10, 10);
+  const yPos = getRandomInt(0, 0);
   const zPos = getRandomInt(-100, 100);
   const position = new Vector3(xPos, yPos, zPos);
 
