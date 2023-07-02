@@ -669,11 +669,11 @@ const CanvasMain: React.FC<Props> = (props: Props) => {
     ))}
       <Shadow />
       <OrbitControls
-        target={new Vector3(0, 50, 0)}
+        target={new Vector3(0, 30, 0)}
         minDistance={80} // Set the minimum distance the camera can be zoomed out 80
         maxDistance={140} // Set the maximum distance the camera can be zoomed in 140
         minPolarAngle={Math.PI / 2} // Set the minimum polar angle (vertical rotation) in radians
-        maxPolarAngle={Math.PI / 1.55} // Set the maximum polar angle (vertical rotation) in radians
+        maxPolarAngle={Math.PI / 1.65} // Set the maximum polar angle (vertical rotation) in radians
       />
     </Canvas>
   );

@@ -20,12 +20,13 @@ function SelectWeather({ handleSelectWeather, handleClick,  selectedWeather, exp
        <img src={icon} className='icon'/>
        </div>
    
-      {expanded && (
+      {expanded && (<>
+         <div  onClick={()=>handleSelectWeather(27)}>
+         <p  className={`weather-menu-item-p-with-margin ${selectedWeather==27 ? 'active' : ''}`} >Select Current</p>
+         <div className="divider"></div>
+       </div>
         <div className='weather-menu'>
-             <div  onClick={()=>handleSelectWeather(27)}>
-                <p  className={`weather-menu-item-p  ${selectedWeather==27 ? 'active' : ''}`} >Select Current</p>
-                <div className="divider"></div>
-              </div>
+            
           {weatherConfig.map((item, index)=>{
             return(
               <div  onClick={()=>handleSelectWeather(index)} key={item.name+index}>
@@ -35,6 +36,7 @@ function SelectWeather({ handleSelectWeather, handleClick,  selectedWeather, exp
           })}
          
         </div>
+        </>
       )}
     </div>
   );
