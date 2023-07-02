@@ -7,9 +7,10 @@ interface SelectWeatherProps {
   handleClick: () => void;
   selectedWeather: any;
   expanded: any;
+  weatherData: any;
 }
 
-function SelectWeather({ handleSelectWeather, handleClick,  selectedWeather, expanded}: SelectWeatherProps) {
+function SelectWeather({ handleSelectWeather, handleClick,  selectedWeather, expanded, weatherData}: SelectWeatherProps) {
   /* const [expanded, setExpanded] = useState(false); */
 
  
@@ -22,7 +23,7 @@ function SelectWeather({ handleSelectWeather, handleClick,  selectedWeather, exp
    
       {expanded && (<>
          <div  onClick={()=>handleSelectWeather(27)}>
-         <p  className={`weather-menu-item-p-with-margin ${selectedWeather==27 ? 'active' : ''}`} >Current Weather</p>
+         <p  className={`weather-menu-item-p-with-margin ${selectedWeather==27 ? 'active' : ''}`} > {"Now: "  + weatherConfig[weatherData.symbol-1].name}</p>
          <div className="divider"></div>
        </div>
         <div className='weather-menu'>

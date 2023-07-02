@@ -514,25 +514,25 @@ const CanvasMain: React.FC<Props> = (props: Props) => {
  
   
   const currentHour = props.currentHour;
-
+console.log(weatherConfig)
+console.log(props.selectedWeather)
   
-  
+  const [currentWeatherConfig, setCurrentWeatherConfig] = useState(weatherConfig[props.weatherData.symbol-1]);
+  console.log(currentWeatherConfig)
 
-  let currentWeatherConfig = weatherConfig[props.selectedWeather];
-  if (props.selectedWeather == 27) {
-    currentWeatherConfig = weatherConfig[props.weatherData.symbol-1];
- 
-  } else {
-    currentWeatherConfig = weatherConfig[props.selectedWeather];
-  }
-  useEffect(()=>{
-    currentWeatherConfig = weatherConfig[props.selectedWeather];
+  function handleUpdateWeather(){
     if (props.selectedWeather == 27) {
-      currentWeatherConfig = weatherConfig[props.weatherData.symbol-1];
-   
-    } else {
-      currentWeatherConfig = weatherConfig[props.selectedWeather];
-    }
+      setCurrentWeatherConfig(weatherConfig[props.weatherData.symbol-1]);
+      console.dir("selected main")
+     
+      } else {
+        setCurrentWeatherConfig(weatherConfig[props.selectedWeather]);
+        console.dir("selected " +props.selectedWeather )
+      }
+  }
+
+  useEffect(()=>{
+    handleUpdateWeather()
   },[props.weatherData, props.selectedWeather ])
 
   const [sunAndMoon, setSunAndMoon] = useState({
@@ -614,8 +614,8 @@ const CanvasMain: React.FC<Props> = (props: Props) => {
   }, [
     props.currentHour,
     props.sunData,
-    props.weatherData, props.selectedWeather
-   
+    props.weatherData, props.selectedWeather,
+    currentWeatherConfig
   ]);
 
   const [totalCloudClusters, setTotalCloudClusters] = useState(0);
@@ -625,7 +625,7 @@ const CanvasMain: React.FC<Props> = (props: Props) => {
       currentWeatherConfig.cloudIntensity * 20
     );
     setTotalCloudClusters(numberOfCloudClusters);
-  }, [props.weatherData, props.selectedWeather]);
+  }, [props.weatherData, props.selectedWeather, currentWeatherConfig]);
   
   
 

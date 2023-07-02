@@ -805,6 +805,7 @@ const weatherConfig = [
     fog: false
     ,groundColor: "#ffffff", // white
   }
+ 
 ];
 
 export default weatherConfig;

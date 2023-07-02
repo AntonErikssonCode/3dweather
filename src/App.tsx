@@ -204,7 +204,6 @@ function App() {
 
 
 
-  console.dir(weatherData)
 
 
   return (
@@ -214,7 +213,7 @@ function App() {
         
       <h2>{weatherData.temp+1}&deg;C</h2>
       </div>
-      <SelectWeather handleSelectWeather={handleSelectWeather} selectedWeather={selectedWeather} handleClick={handleClick} expanded={expanded}/>
+      <SelectWeather  weatherData={weatherData}handleSelectWeather={handleSelectWeather} selectedWeather={selectedWeather} handleClick={handleClick} expanded={expanded}/>
       </div>
 
       
