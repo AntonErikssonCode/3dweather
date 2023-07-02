@@ -264,7 +264,7 @@ const Lightning: React.FC<LightningProps> = () => {
   const delayTime = getRandomInt(0, 7000);
   const speed = 2;
   const rnd = getRandomIntNotFloor(0, 1); //0.3
-  const spawnLightning = rnd > 0.99 ? true : false;
+  const spawnLightning = rnd > 0.97 ? true : false;
 
   useEffect(() => {
     // Delay the initial update of the precipitation's position
@@ -294,7 +294,7 @@ const Lightning: React.FC<LightningProps> = () => {
   if (spawnLightning) {
     return (
       <mesh ref={meshRef}>
-        <sphereGeometry args={[2, 10, 10]} />
+        <boxGeometry args={[1, 4, 1]} />
         <meshPhysicalMaterial
           color="yellow"
           metalness={0.5}
@@ -340,8 +340,8 @@ function Precipitation(props: PrecipitationProps) {
   };
 
   const spawnPerciption =
-    getRandomIntNotFloor(0, 1) <=
-    precipitationConfig[precipitationType].intensity
+    getRandomIntNotFloor(0, 1) >=
+    precipitationConfig[precipitationType].intensity * 0.8
       ? true
       : false;
 
@@ -356,25 +356,28 @@ function Precipitation(props: PrecipitationProps) {
   }, []);
 
   useFrame(() => {
-    // Animate the Y position of the precipitation
-    yPosition.current -= precipitationConfig[precipitationType].speed; // Adjust the animation speed as needed
+    if (spawnPerciption) {
+      // Animate the Y position of the precipitation
+      yPosition.current -= precipitationConfig[precipitationType].speed; // Adjust the animation speed as needed
 
-    if (meshRef.current) {
-      meshRef.current.position.set(xPos, yPosition.current, zPos);
-      if (yPosition.current <= -70) {
-        // Adjust the threshold as needed
-        yPosition.current = initialYPos;
+      if (meshRef.current) {
+        meshRef.current.position.set(xPos, yPosition.current, zPos);
+        if (yPosition.current <= -70) {
+          // Adjust the threshold as needed
+          yPosition.current = initialYPos;
+        }
       }
     }
   });
+
   if (spawnPerciption) {
     return (
       <mesh ref={meshRef}>
-        <sphereGeometry args={[0.8, 5, 5]} />
+        <sphereGeometry args={[1.2, 5, 5]} />
         <meshPhysicalMaterial
           color={precipitationConfig[precipitationType].color}
-          metalness={0.5}
-          roughness={0.5}
+          /* metalness={0.5}
+          roughness={0.5} */
           emissive={precipitationConfig[precipitationType].color}
           emissiveIntensity={1}
           opacity={precipitationConfig[precipitationType].opacity}
@@ -391,7 +394,7 @@ function Cloud(props: CloudProps) {
   const currentWeather = props.currentWeather;
 
   const cloudColor = currentWeather.cloudColor;
-  const cloudScale = getRandomInt(4, 7);
+  const cloudScale = getRandomInt(5, 13);
   const xPos = getRandomInt(-10, 10);
   const yPos = getRandomInt(80, 95);
   const zPos = getRandomInt(-10, 10);
@@ -430,10 +433,10 @@ function Cloud(props: CloudProps) {
 
 function CloudCluster(props: CloudProps) {
   const weather = props.weather;
-  const numberOfClouds = getRandomInt(1, 25);
-  const xPos = getRandomInt(-80, 80);
+  const numberOfClouds = getRandomInt(1, 15);
+  const xPos = getRandomInt(-100, 100);
   const yPos = getRandomInt(0, 0);
-  const zPos = getRandomInt(-80, 80);
+  const zPos = getRandomInt(-100, 100);
   const position = new Vector3(xPos, yPos, zPos);
 
   const clouds = Array.from({ length: numberOfClouds }, (_, index) => (
@@ -521,8 +524,6 @@ const CanvasMain: React.FC<Props> = (props: Props) => {
     currentWeatherConfig = weatherConfig[props.selectedWeather];
   }
 
-
-
   const [sunAndMoon, setSunAndMoon] = useState({
     type: "sun",
     position: 0,
@@ -577,13 +578,14 @@ const CanvasMain: React.FC<Props> = (props: Props) => {
     }
   }
   useEffect(() => {
+    console.dir("render2")
     const sunMoveDegree = 180 / sun.dayLength;
     const moonMoveDegree = 180 / sun.nightLength;
     const sunMoveDegreeTotal = sunMoveDegree * (currentHour - sun.sunrise);
     const moonMoveDegreeTotal = moonMoveDegree * (currentHour - sun.dusk);
 
     let updateTime = updateDayTime();
-   
+
     if (currentHour >= sun.dawn && currentHour <= sun.dusk) {
       setSunAndMoon({
         type: "sun",
@@ -599,22 +601,23 @@ const CanvasMain: React.FC<Props> = (props: Props) => {
       });
       setDay(false);
     }
-  }, [props.currentHour, props.sunData, props.weatherData, props.selectedWeather]);
+  }, [
+    props.currentHour,
+    props.sunData,
+   
+  ]);
 
-  const numberOfCloudCLusters = Math.ceil(
-    currentWeatherConfig.cloudIntensity * 20
-  );
-  const totalCloudClusters = Array.from(
-    { length: numberOfCloudCLusters },
-    (_, index) => (
-      <CloudCluster
-        weather={weather}
-        currentWeather={currentWeatherConfig}
-        color="white"
-        key={index}
-      />
-    )
-  );
+  const [totalCloudClusters, setTotalCloudClusters] = useState(0);
+
+  useEffect(() => {
+    console.dir("render")
+    const numberOfCloudClusters = Math.ceil(
+      currentWeatherConfig.cloudIntensity * 20
+    );
+    setTotalCloudClusters(numberOfCloudClusters);
+  }, [props.weatherData, props.selectedWeather]);
+  
+  
 
   return (
     <Canvas
@@ -628,7 +631,6 @@ const CanvasMain: React.FC<Props> = (props: Props) => {
         fov: cameraFov,
       }}
     >
-  
       {currentWeatherConfig.fog ? (
         <>
           <FogCluster />
@@ -651,7 +653,14 @@ const CanvasMain: React.FC<Props> = (props: Props) => {
           side={THREE.DoubleSide}
         />
       </mesh>
-      {totalCloudClusters}
+      {Array.from({ length: totalCloudClusters }, (_, index) => (
+      <CloudCluster
+        weather={weather}
+        currentWeather={currentWeatherConfig}
+        color="white"
+        key={index}
+      />
+    ))}
       <Shadow />
       <OrbitControls
         target={new Vector3(0, 50, 0)}
@@ -660,7 +669,6 @@ const CanvasMain: React.FC<Props> = (props: Props) => {
         minPolarAngle={Math.PI / 2} // Set the minimum polar angle (vertical rotation) in radians
         maxPolarAngle={Math.PI / 1.55} // Set the maximum polar angle (vertical rotation) in radians
       />
-  
     </Canvas>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 import CanvasMain from "./components/CanvasMain";
@@ -24,9 +24,11 @@ function App() {
   const [selectedWeather, setSelectedWeather] = useState<any>(27);
   const [expanded, setExpanded] = useState(false);
 
-  const handleClick = () => {
+ 
+  const handleClick = useCallback(() => {
     setExpanded(true);
-  };
+  }, []);
+
   const handleClose = () => {
     setExpanded(false);
   };
