@@ -8,7 +8,7 @@
   color: #363636;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Adjust the values for shadow size and opacity */
   border: 1px solid rgba(0, 0, 0, 0.1); /* Adjust the color and opacity of the border */
-  transition: all 0.2s ease-out;
+  transition: all 0.6s ease-out;
 }
 .selected-weather {
   width: 70px;
@@ -36,21 +36,18 @@
 .icon{
   width: 100%;
   width:100%;
-  transition: all 0.2s ease-out;
 }
 .icon-container{
   width: 36px;
   display: flex;
 align-content: center;
 justify-content: center;
-transition: all 0.2s ease-out;
 
 }
 .icon-container-expanded{
   width: 25%;
-  
+  transition: all 0.4s ease-out 0.2s;
   margin: auto;
-  transition: all 0.2s ease-out;
 }
 .margin-top  {
   margin-top: 2rem;
@@ -62,7 +59,7 @@ transition: all 0.2s ease-out;
   gap: 1rem;
   overflow-y: scroll;
   max-height: 100%;
-  transition: all 0.2s ease-out;
+  transition: all 0.2s ease-out 0.2s;
   padding-bottom: 2rem;
   
 }
