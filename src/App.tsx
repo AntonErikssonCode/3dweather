@@ -79,6 +79,7 @@ function App() {
         (error) => {
           // Handle geolocation error
           console.error("Error getting geolocation:", error.message);
+          window.alert("You must allow geolocation for this app to work :/");
         }
       );
     } else {
@@ -203,7 +204,7 @@ function App() {
 
 
 
-
+console.dir(weatherData)
 
 
   return (
