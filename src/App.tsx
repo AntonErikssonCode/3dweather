@@ -4,6 +4,7 @@ import "./App.css";
 import CanvasMain from "./components/CanvasMain";
 import { setInterval } from "timers/promises";
 import weatherConfig from "./weatherConfig";
+import SelectWeather from "./components/SelectWeather";
 function App() {
   const [weatherEndpoint, setWeatherEndpoint] = useState(
     "https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/16.158/lat/58.5812/data.json"
@@ -20,8 +21,18 @@ function App() {
   const [sunData, setSunData] = useState<any>({});
   const [pos, setPos] = useState({ longitude: "0", latitude: "0" });
   const [currentHour, setCurrentHour] = useState<number>(0);
+  const [selectedWeather, setSelectedWeather] = useState<any>(27);
+  const [expanded, setExpanded] = useState(false);
 
-  
+  const handleClick = () => {
+    setExpanded(true);
+  };
+  const handleClose = () => {
+    setExpanded(false);
+  };
+  function handleSelectWeather(weatherIndex:number){
+    setSelectedWeather(weatherIndex)
+  }
 
   useEffect(() => {
     setWeatherEndpoint(
@@ -205,12 +216,15 @@ function App() {
         
       <h2>{weatherData.temp+1}&deg;C</h2>
       </div>
+      <SelectWeather handleSelectWeather={handleSelectWeather} selectedWeather={selectedWeather} handleClick={handleClick} expanded={expanded}/>
       </div>
-       <CanvasMain sunData={sunData} weatherData={weatherData} currentHour={currentHour}/>
 
+      
+       <CanvasMain handleClose={handleClose}  sunData={sunData} weatherData={weatherData} currentHour={currentHour} selectedWeather={selectedWeather}/>
+       
+   
 
-
-     <p>asd</p>
+   
     </div>
   );
 }

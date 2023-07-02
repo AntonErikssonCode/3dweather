@@ -20,6 +20,8 @@ interface Props {
   sunData: any;
   weatherData: any;
   currentHour: number;
+  selectedWeather: number
+  handleClose: () => void;
 }
 
 interface SpotlightProps {
@@ -439,7 +441,7 @@ function CloudCluster(props: CloudProps) {
 
   const clouds = Array.from({ length: numberOfClouds }, (_, index) => (
     <Cloud
-      key={index}
+      key={"cloud"+index}
       weather={weather}
       currentWeather={props.currentWeather}
       color={"white"}
@@ -485,7 +487,7 @@ function FogCluster(props: {}) {
   const fogColor = "grey";
 
   const fogs = Array.from({ length: numberOfFogs }, (_, index) => (
-    <group position={position} >
+    <group position={position} key={"fog"+index}>
       <Fog />
     </group>
   ));
@@ -498,8 +500,25 @@ const CanvasMain: React.FC<Props> = (props: Props) => {
   const weather = props.weatherData;
 
   const currentHour =  props.currentHour;
-  const weatherSymbol = weather.symbol as keyof typeof weatherConfig;
-  const currentWeatherConfig = weatherConfig[weatherSymbol];
+/*  const weatherSymbol = weather.symbol as keyof typeof weatherConfig;
+  */
+/*  const [currentWeatherConfig, setCurrentWeatherConfig] = useState(weatherConfig[weather.symbol]);
+
+ useEffect(()=>{
+  setCurrentWeatherConfig(weatherConfig[weather.symbol])
+ },[weather.symbol])
+ */
+ let currentWeatherConfig = weatherConfig[ props.selectedWeather];
+
+ if(props.selectedWeather ==27){
+  currentWeatherConfig = weatherConfig[ weather.symbol];
+
+ }
+ else{
+  currentWeatherConfig = weatherConfig[ props.selectedWeather];
+ }
+
+ 
   const [sunAndMoon, setSunAndMoon] = useState({
     type: "sun",
     position: 0,
@@ -576,7 +595,7 @@ const CanvasMain: React.FC<Props> = (props: Props) => {
       });
       setDay(false);
     }
-  }, [currentHour, sun, weather]);
+  }, [currentHour]);
 
   const numberOfCloudCLusters = Math.ceil(
     currentWeatherConfig.cloudIntensity * 20
@@ -588,6 +607,7 @@ const CanvasMain: React.FC<Props> = (props: Props) => {
         weather={weather}
         currentWeather={currentWeatherConfig}
         color="white"
+        key={index}
       />
     )
   );
@@ -611,6 +631,7 @@ const CanvasMain: React.FC<Props> = (props: Props) => {
 
   return (
     <Canvas
+    onClick={props.handleClose}
       style={{ background: skyColor }} // Sky Color
       shadows
       shadow-map={2048}

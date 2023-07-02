@@ -1,0 +1,80 @@
+.weather {
+  background-color: rgba(247, 247, 247, 0.6); /* Adjust the alpha value for transparency */
+  display: flex;
+  justify-content: center;
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 0.5rem 0.5rem;
+  border-radius: 60px;
+  color: #363636;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Adjust the values for shadow size and opacity */
+  border: 1px solid rgba(0, 0, 0, 0.1); /* Adjust the color and opacity of the border */
+  transition: all 0.2s ease-out;
+}
+.selected-weather {
+  width: 70px;
+  border-radius: 60px;
+}
+
+.selected-weather-expanded{
+  width: auto;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  height: auto;
+  max-height: 300px;
+
+
+}
+.icon{
+  width: 32px;
+  width: 32px;
+}
+.icon-container{
+  width: 100%;
+  display: flex;
+align-content: center;
+justify-content: center;
+
+}
+.icon-container-expanded{
+  margin-bottom: 2rem;
+  transition: all 0.6s ease-out;
+}
+
+.weather-menu{
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  overflow-y: scroll;
+  max-height: 100%;
+  transition: all 0.2s ease-out;
+  padding-bottom: 2rem;
+  
+}
+.weather-menu-item p{
+  margin: 0;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+}
+/* Add the following styles to customize the scrollbar */
+.weather-menu::-webkit-scrollbar {
+  width: 8px; /* Width of the scrollbar */
+  border-radius: 4px; /* Rounded corners */
+}
+
+.weather-menu::-webkit-scrollbar-track {
+  background-color: #f1f1f1; /* Background color of the track */
+  border-radius: 4px
+}
+
+.weather-menu::-webkit-scrollbar-thumb {
+  background-color: #c3c3c3; /* Color of the thumb */
+  border-radius: 4px; /* Rounded corners */
+}
+
+.weather-menu::-webkit-scrollbar-thumb:hover {
+  background-color: #a3a3a3; /* Color of the thumb on hover */
+  border-radius: 4px
+}
