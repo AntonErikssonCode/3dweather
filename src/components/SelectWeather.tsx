@@ -30,7 +30,7 @@ function SelectWeather({ handleSelectWeather, handleClick,  selectedWeather, exp
           {weatherConfig.map((item, index)=>{
             return(
               <div  onClick={()=>handleSelectWeather(index)} key={item.name+index}>
-                <p className={`weather-menu-item-p ${selectedWeather==index ? 'active' : ''}`}>{item.name}</p>
+                <p className={`weather-menu-item-p ${selectedWeather==index ? 'active' : ''}`}>{index+1 + " " + item.name}</p>
               </div>
             )
           })}
