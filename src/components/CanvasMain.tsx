@@ -394,15 +394,15 @@ function Cloud(props: CloudProps) {
   const currentWeather = props.currentWeather;
 
   const cloudColor = currentWeather.cloudColor;
-  const cloudScale = getRandomInt(5, 13);
+  const cloudScale = getRandomInt(3, 15);
   const xPos = getRandomInt(-10, 10);
   const yPos = getRandomInt(80, 95);
   const zPos = getRandomInt(-10, 10);
   const position = new Vector3(xPos, yPos, zPos);
-
+  const cloudOpacity = getRandomInt(0.7, 0.9);
   return (
-    <group position={position}>
-      <mesh>
+    <group position={position} >
+{/*       <mesh >
         <sphereGeometry args={[1 * cloudScale, 5,5]} />
         <meshPhysicalMaterial
           color={cloudColor}
@@ -412,16 +412,16 @@ function Cloud(props: CloudProps) {
           emissiveIntensity={1}
           opacity={1}
         />
-      </mesh>
+      </mesh> */}
       <mesh>
         <sphereGeometry args={[2 * cloudScale, 15,15]} />
         <meshPhysicalMaterial
           color={cloudColor}
-          metalness={0.5}
-          roughness={0.5}
+          metalness={0.1}
+          roughness={1}
           emissive={cloudColor}
           emissiveIntensity={1}
-          opacity={0.5}
+          opacity={cloudOpacity}
           transparent
         />
       </mesh>
@@ -433,9 +433,9 @@ function Cloud(props: CloudProps) {
 
 function CloudCluster(props: CloudProps) {
   const weather = props.weather;
-  const numberOfClouds = getRandomInt(1, 15);
+  const numberOfClouds = getRandomInt(1, 20);
   const xPos = getRandomInt(-100, 100);
-  const yPos = getRandomInt(0, 0);
+  const yPos = getRandomInt(-10, 10);
   const zPos = getRandomInt(-100, 100);
   const position = new Vector3(xPos, yPos, zPos);
 
