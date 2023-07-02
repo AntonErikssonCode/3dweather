@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import "./SelectedWeather.css";
-import icon from "../assets/clear-sky.png"
+import icon from "../assets/weather.png"
 import weatherConfig from '../weatherConfig';
 interface SelectWeatherProps {
   handleSelectWeather: (weatherIndex: number) => void;
@@ -22,13 +22,14 @@ function SelectWeather({ handleSelectWeather, handleClick,  selectedWeather, exp
    
       {expanded && (
         <div className='weather-menu'>
-             <div className='weather-menu-item' onClick={()=>handleSelectWeather(27)}>
-                <p>Select Current</p>
+             <div  onClick={()=>handleSelectWeather(27)}>
+                <p  className={`weather-menu-item-p  ${selectedWeather==27 ? 'active' : ''}`} >Select Current</p>
+                <div className="divider"></div>
               </div>
           {weatherConfig.map((item, index)=>{
             return(
-              <div className='weather-menu-item' onClick={()=>handleSelectWeather(index)} key={item.name+index}>
-                <p>{item.name}</p>
+              <div  onClick={()=>handleSelectWeather(index)} key={item.name+index}>
+                <p className={`weather-menu-item-p ${selectedWeather==index ? 'active' : ''}`}>{item.name}</p>
               </div>
             )
           })}

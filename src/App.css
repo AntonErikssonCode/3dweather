@@ -47,6 +47,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+
 }
 
 .temp-container {
@@ -56,9 +57,9 @@
   display: flex;
   justify-content: center;
   font-family: Arial, Helvetica, sans-serif;
-  padding: 0.5rem 0.5rem;
+  align-items: center;
   border-radius: 60px;
-  
+  height: 54px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Adjust the values for shadow size and opacity */
   border: 1px solid rgba(0, 0, 0, 0.1); /* Adjust the color and opacity of the border */
 }
