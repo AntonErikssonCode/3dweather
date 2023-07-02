@@ -516,7 +516,7 @@ const CanvasMain: React.FC<Props> = (props: Props) => {
   const currentHour = props.currentHour;
 
   
-
+  
 
   let currentWeatherConfig = weatherConfig[props.selectedWeather];
   if (props.selectedWeather == 27) {
@@ -526,7 +526,13 @@ const CanvasMain: React.FC<Props> = (props: Props) => {
     currentWeatherConfig = weatherConfig[props.selectedWeather];
   }
   useEffect(()=>{
-
+    currentWeatherConfig = weatherConfig[props.selectedWeather];
+    if (props.selectedWeather == 27) {
+      currentWeatherConfig = weatherConfig[props.weatherData.symbol-1];
+   
+    } else {
+      currentWeatherConfig = weatherConfig[props.selectedWeather];
+    }
   },[props.weatherData, props.selectedWeather ])
 
   const [sunAndMoon, setSunAndMoon] = useState({
