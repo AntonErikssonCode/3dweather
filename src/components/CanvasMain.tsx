@@ -417,8 +417,8 @@ function Cloud(props: CloudProps) {
         <sphereGeometry args={[2 * cloudScale, 15,15]} />
         <meshPhysicalMaterial
           color={cloudColor}
-          metalness={0.1}
-          roughness={1}
+          metalness={0.5}
+          roughness={0.5}
           emissive={cloudColor}
           emissiveIntensity={1}
           opacity={cloudOpacity}
