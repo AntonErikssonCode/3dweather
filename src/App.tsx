@@ -123,7 +123,7 @@ function App() {
       const currentWeather = data.timeSeries.find(
         (obj: any) => obj.validTime === currentTime
       );
-      console.log(data)
+   
 
       // t = Degree
       // wd = Wind Direction
@@ -189,9 +189,28 @@ function App() {
     }
   };
 
+
+
+
+
+
+
+
+
+
   return (
-    <div style={{ width: "100vw", height: "100vh" }}>
+    <div style={{ width: "100vw", height: "100vh", overflow:"hidden" }}>
+      <div className="info-container">
+      <div className="temp-container">
+        
+      <h2>{weatherData.temp+1}&deg;C</h2>
+      </div>
+      </div>
        <CanvasMain sunData={sunData} weatherData={weatherData} currentHour={currentHour}/>
+
+
+
+     <p>asd</p>
     </div>
   );
 }

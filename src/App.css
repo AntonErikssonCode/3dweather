@@ -36,3 +36,31 @@
     transform: rotate(360deg);
   }
 }
+.info-container {
+  z-index: 1;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: auto;
+  padding: 0.5rem;
+}
+
+.temp-container {
+  width: 140px;
+  background-color: rgba(247, 247, 247, 0.6); /* Adjust the alpha value for transparency */
+  height: auto;
+  display: flex;
+  justify-content: center;
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 0.5rem 0.5rem;
+  border-radius: 60px;
+
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Adjust the values for shadow size and opacity */
+  border: 1px solid rgba(0, 0, 0, 0.1); /* Adjust the color and opacity of the border */
+}
+
+.temp-container h2 {
+  margin: 0;
+  color: #363636;
+}

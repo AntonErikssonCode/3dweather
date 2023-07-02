@@ -12,6 +12,8 @@ const weatherConfig = {
     snowIntensity: 0,
     thunder: false,
     fog: false
+    ,groundColor: "#00bb00", // Green
+    
   },
   "2": {
     name: "Nearly clear sky",
@@ -25,7 +27,7 @@ const weatherConfig = {
     snow: false,
     snowIntensity: 0,
     thunder: false,
-    fog: false
+    fog: false ,groundColor: "#00bb00", // Green
   },
   "3": {
     name: "Variable cloudiness",
@@ -40,6 +42,7 @@ const weatherConfig = {
     snowIntensity: 0,
     thunder: false,
     fog: false
+    ,groundColor: "#00bb00", // Green
   },
   "4": {
     name: "Halfclear sky",
@@ -54,6 +57,7 @@ const weatherConfig = {
     snowIntensity: 0,
     thunder: false,
     fog: false
+    ,groundColor: "#00bb00", // Green
   },
   "5": {
     name: "Cloudy sky",
@@ -68,6 +72,7 @@ const weatherConfig = {
     snowIntensity: 0,
     thunder: false,
     fog: false
+    ,groundColor: "#00bb00", // Green
   },
   "6": {
     name: "Overcast",
@@ -81,7 +86,8 @@ const weatherConfig = {
     snow: false,
     snowIntensity: 0,
     thunder: false,
-    fog: false
+    fog: false,
+    groundColor: "#006400",
   },
   "7": {
     name: "Fog",
@@ -96,6 +102,7 @@ const weatherConfig = {
     snowIntensity: 0,
     thunder: false,
     fog: true
+    ,groundColor: "#00bb00", // Green
   },
   "8": {
     name: "Light rain showers",
@@ -109,7 +116,8 @@ const weatherConfig = {
     snow: false,
     snowIntensity: 0,
     thunder: false,
-    fog: false
+    fog: false,
+    groundColor: "#006400",
   },
   "9": {
     name: "Moderate rain showers",
@@ -123,7 +131,8 @@ const weatherConfig = {
     snow: false,
     snowIntensity: 0,
     thunder: false,
-    fog: false
+    fog: false,
+    groundColor: "#006400",
   },
   "10": {
     name: "Heavy rain showers",
@@ -137,7 +146,8 @@ const weatherConfig = {
     snow: false,
     snowIntensity: 0,
     thunder: false,
-    fog: false
+    fog: false,
+    groundColor: "#006400",
   },
   "11": {
     name: "Thunderstorm",
@@ -151,7 +161,8 @@ const weatherConfig = {
     snow: false,
     snowIntensity: 0,
     thunder: true,
-    fog: false
+    fog: false,
+    groundColor: "#006400",
   },
   "12": {
     name: "Light sleet showers",
@@ -165,7 +176,8 @@ const weatherConfig = {
     snow: true,
     snowIntensity: 0.2,
     thunder: false,
-    fog: false
+    fog: false,
+    groundColor: "#006400",
   },
   "13": {
     name: "Moderate sleet showers",
@@ -179,7 +191,8 @@ const weatherConfig = {
     snow: true,
     snowIntensity: 0.5,
     thunder: false,
-    fog: false
+    fog: false,
+    groundColor: "#006400",
   },
   "14": {
     name: "Heavy sleet showers",
@@ -193,7 +206,7 @@ const weatherConfig = {
     snow: true,
     snowIntensity: 1,
     thunder: false,
-    fog: false
+    fog: false    ,groundColor: "#ffffff", // white
   },
   "15": {
     name: "Light snow showers",
@@ -207,7 +220,8 @@ const weatherConfig = {
     snow: true,
     snowIntensity: 0.2,
     thunder: false,
-    fog: false
+    fog: false,
+    groundColor: "#006400",
   },
   "16": {
     name: "Moderate snow showers",
@@ -221,7 +235,7 @@ const weatherConfig = {
     snow: true,
     snowIntensity: 0.5,
     thunder: false,
-    fog: false
+    fog: false    ,groundColor: "#ffffff", // white
   },
   "17": {
     name: "Heavy snow showers",
@@ -235,7 +249,7 @@ const weatherConfig = {
     snow: true,
     snowIntensity: 1,
     thunder: false,
-    fog: false
+    fog: false    ,groundColor: "#ffffff", // white
   },
   "18": {
     name: "Light rain",
@@ -249,7 +263,8 @@ const weatherConfig = {
     snow: false,
     snowIntensity: 0,
     thunder: false,
-    fog: false
+    fog: false,
+    groundColor: "#006400",
   },
   "19": {
     name: "Moderate rain",
@@ -263,7 +278,8 @@ const weatherConfig = {
     snow: false,
     snowIntensity: 0,
     thunder: false,
-    fog: false
+    fog: false,
+    groundColor: "#006400",
   },
   "20": {
     name: "Heavy rain",
@@ -277,7 +293,8 @@ const weatherConfig = {
     snow: false,
     snowIntensity: 0,
     thunder: false,
-    fog: false
+    fog: false,
+    groundColor: "#006400",
   },
   "21": {
     name: "Thunder",
@@ -291,7 +308,8 @@ const weatherConfig = {
     snow: false,
     snowIntensity: 0,
     thunder: true,
-    fog: false
+    fog: false,
+    groundColor: "#006400",
   },
   "22": {
     name: "Light sleet",
@@ -305,7 +323,8 @@ const weatherConfig = {
     snow: true,
     snowIntensity: 0.2,
     thunder: false,
-    fog: false
+    fog: false,
+    groundColor: "#006400",
   },
   "23": {
     name: "Moderate sleet",
@@ -319,7 +338,8 @@ const weatherConfig = {
     snow: true,
     snowIntensity: 0.5,
     thunder: false,
-    fog: false
+    fog: false,
+    groundColor: "#006400",
   },
   "24": {
     name: "Heavy sleet",
@@ -333,7 +353,7 @@ const weatherConfig = {
     snow: true,
     snowIntensity: 1,
     thunder: false,
-    fog: false
+    fog: false    ,groundColor: "#ffffff", // white
   },
   "25": {
     name: "Light snowfall",
@@ -347,7 +367,7 @@ const weatherConfig = {
     snow: true,
     snowIntensity: 0.2,
     thunder: false,
-    fog: false
+    fog: false    ,groundColor: "#ffffff", // white
   },
   "26": {
     name: "Moderate snowfall",
@@ -362,6 +382,7 @@ const weatherConfig = {
     snowIntensity: 0.5,
     thunder: false,
     fog: false
+    ,groundColor: "#ffffff", // white
   },
   "27": {
     name: "Heavy snowfall",
@@ -376,6 +397,7 @@ const weatherConfig = {
     snowIntensity: 1,
     thunder: false,
     fog: false
+    ,groundColor: "#ffffff", // white
   }
 };
 export default weatherConfig;

@@ -1,16 +1,20 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, Suspense } from "react";
 import { Canvas, useFrame, useLoader } from "react-three-fiber";
 import { OrbitControls, Plane, Shadow, useHelper } from "@react-three/drei";
 import { PerspectiveCamera, Euler, Vector3 } from "three";
 import weatherConfig from "../weatherConfig";
 import * as THREE from "three"; // Add this import statement
+import { EffectComposer, Bloom, Vignette  } from "@react-three/postprocessing";
+
 import { wait } from "@testing-library/user-event/dist/utils";
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 /* import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
- *//* import { OBJLoader as LoadersGLOBJLoader } from '@loaders.gl/obj';
+ */ /* import { OBJLoader as LoadersGLOBJLoader } from '@loaders.gl/obj';
  import { Loader } from '@loaders.gl/core'; */
- import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";
- import { Mesh } from 'three';
+import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";
+import { Mesh } from "three";
+import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader";
+import { Console } from "console";
 
 interface Props {
   sunData: any;
@@ -19,11 +23,13 @@ interface Props {
 }
 
 interface SpotlightProps {
-  sunAndMoon: { type: string; position: number };
+  sunAndMoon: { type: string; position: number; dayTime: string };
 }
 const Spotlight: React.FC<SpotlightProps> = ({ sunAndMoon }) => {
   const spotlightGroupRef = useRef<THREE.Group>(null);
-  const scale = 7;
+  const scale = 12;
+  
+
   const colors = {
     sunColors: [
       "rgb(255, 0, 0)",
@@ -31,6 +37,34 @@ const Spotlight: React.FC<SpotlightProps> = ({ sunAndMoon }) => {
       "rgb(255, 149, 0)",
       "rgb(255, 234, 0)",
       "rgb(221, 255, 0)",
+    ],
+    dawn: [
+      "rgb(239, 115, 26)", // Light Orange
+      "rgb(244, 161, 66)", // Light Orange-Yellow
+      "rgb(249, 208, 106)", // Light Yellow
+      "rgb(255, 156, 103)", // Light Yellow-Red
+      "rgb(255, 51, 51)",  // Light Red
+    ],
+    sunrise: [
+      "rgb(255, 0, 0)",
+      "rgb(255, 60, 0)",
+      "rgb(255, 149, 0)",
+      "rgb(255, 234, 0)",
+      "rgb(221, 255, 0)",
+    ],
+    sunset: [
+      "rgb(239, 115, 26)", // Light Orange
+      "rgb(244, 161, 66)", // Light Orange-Yellow
+      "rgb(249, 208, 106)", // Light Yellow
+      "rgb(255, 156, 103)", // Light Yellow-Red
+      "rgb(255, 51, 51)",  // Light Red
+    ],
+    dusk: [
+      "rgb(239, 115, 26)", // Light Orange
+      "rgb(244, 161, 66)", // Light Orange-Yellow
+      "rgb(249, 208, 106)", // Light Yellow
+      "rgb(255, 156, 103)", // Light Yellow-Red
+      "rgb(255, 51, 51)",  // Light Red
     ],
     moonColors: [
       "rgb(255, 255, 255)",
@@ -40,9 +74,11 @@ const Spotlight: React.FC<SpotlightProps> = ({ sunAndMoon }) => {
       "rgb(140, 140, 140)",
     ],
   };
-  const [sphereColor, setSphereColor] = useState(colors.sunColors);
 
+  const [sphereColor, setSphereColor] = useState(colors.sunColors);
   const [lightColor, setLightColor] = useState("rgba(235, 235, 235, 0.554)");
+  const [intensity, setIntensity] = useState(0.8);
+
   const updateSpotlightPosition = (degree: number) => {
     const radius = 20 * scale;
 
@@ -57,24 +93,73 @@ const Spotlight: React.FC<SpotlightProps> = ({ sunAndMoon }) => {
   useEffect(() => {
     updateSpotlightPosition(sunAndMoon.position);
     if (sunAndMoon.type === "sun") {
+      setIntensity(0.8)
       setLightColor("rgba(235, 235, 235, 0.554)");
-      setSphereColor(colors.sunColors);
+      switch (sunAndMoon.dayTime) {
+        case "dawn":
+          setSphereColor(colors.dawn);
+          setLightColor("#d125f0");
+          break;
+
+        case "sunrise":
+          setSphereColor(colors.sunColors);
+          setLightColor("rgba(235, 235, 235, 0.554)");
+
+          break;
+
+        case "sunset":
+          setSphereColor(colors.sunset);
+          setLightColor("#ff9500");
+          setLightColor("rgba(235, 235, 235, 0.554)");
+
+          break;
+
+        case "dusk":
+          setSphereColor(colors.dusk);
+          setLightColor("#d125f0");
+
+          break;
+
+        default:
+          setSphereColor(colors.dusk);
+      }
     } else if (sunAndMoon.type === "moon") {
-      setLightColor("rgba(255, 255, 255, 0.842)");
+       setIntensity(0.4)
+      setLightColor("rgba(255, 255, 255, 0.542)");
       setSphereColor(colors.moonColors);
     }
   }, [sunAndMoon]);
 
   return (
     <group ref={spotlightGroupRef}>
+
       <spotLight
         angle={Math.PI / 3}
         penumbra={0.5}
         castShadow
         position={[0, 0, 0]}
         visible
-        intensity={0.8}
+        intensity={intensity}
         color={lightColor}
+      />
+      <spotLight
+        angle={Math.PI / 3}
+        penumbra={0.5}
+        castShadow
+        position={[0, 60, 0]}
+        visible
+        intensity={intensity}
+        color={lightColor}
+      />
+      <spotLight
+        angle={Math.PI / 3}
+        penumbra={0.5}
+        castShadow
+        position={[0, -60, 0]}
+        visible
+        intensity={intensity}
+        color={lightColor}
+        
       />
       <mesh position={[0, 0, 0]}>
         <sphereGeometry args={[1 * scale, 20, 20]} />
@@ -161,10 +246,12 @@ function getRandomIntNotFloor(min: number, max: number): number {
   return Math.random() * (max - min) + min;
 }
 
-function triangleWave(t:number, period:number) {
+function triangleWave(t: number, period: number) {
   const normalizedTime = t / period;
   const fractionalPart = normalizedTime - Math.floor(normalizedTime);
-  return fractionalPart < 0.5 ? fractionalPart * 4 - 1 : (1 - fractionalPart) * 4 - 1;
+  return fractionalPart < 0.5
+    ? fractionalPart * 4 - 1
+    : (1 - fractionalPart) * 4 - 1;
 }
 
 interface LightningProps {}
@@ -176,11 +263,11 @@ const Lightning: React.FC<LightningProps> = () => {
   const meshRef = useRef<THREE.Mesh>(null);
   const yPosition = useRef(initialYPos);
   const delayTime = getRandomInt(0, 7000);
-const speed = 2;
-const rnd = getRandomIntNotFloor(0, 1); //0.3
-  const spawnLightning = rnd > 0.99? true : false;
+  const speed = 2;
+  const rnd = getRandomIntNotFloor(0, 1); //0.3
+  const spawnLightning = rnd > 0.99 ? true : false;
 
- useEffect(() => {
+  useEffect(() => {
     // Delay the initial update of the precipitation's position
     const delay = delayTime;
     const timer = setTimeout(() => {
@@ -194,17 +281,21 @@ const rnd = getRandomIntNotFloor(0, 1); //0.3
     yPosition.current -= speed; // Adjust the animation speed as needed
 
     if (meshRef.current) {
-      meshRef.current.position.set(5* triangleWave(yPosition.current/4, 10), yPosition.current, zPos);
+      meshRef.current.position.set(
+        5 * triangleWave(yPosition.current / 4, 10),
+        yPosition.current,
+        zPos
+      );
       if (yPosition.current <= -70) {
         // Adjust the threshold as needed
         yPosition.current = initialYPos;
       }
     }
   });
-  if(spawnLightning){
+  if (spawnLightning) {
     return (
       <mesh ref={meshRef}>
-        <sphereGeometry args={[2,10,10]} />
+        <sphereGeometry args={[2, 10, 10]} />
         <meshPhysicalMaterial
           color="yellow"
           metalness={0.5}
@@ -216,13 +307,9 @@ const rnd = getRandomIntNotFloor(0, 1); //0.3
         />
       </mesh>
     );
-
   }
   return null;
 };
-
-
-
 
 function Precipitation(props: PrecipitationProps) {
   const xPos = 0;
@@ -307,13 +394,13 @@ function Cloud(props: CloudProps) {
   const cloudColor = currentWeather.cloudColor;
   const cloudScale = getRandomInt(4, 7);
   const xPos = getRandomInt(-10, 10);
-  const yPos = getRandomInt(50, 75);
+  const yPos = getRandomInt(80, 95);
   const zPos = getRandomInt(-10, 10);
   const position = new Vector3(xPos, yPos, zPos);
 
   return (
     <group position={position}>
-      <mesh>
+      <mesh >
         <sphereGeometry args={[1 * cloudScale, 20, 20]} />
         <meshPhysicalMaterial
           color={cloudColor}
@@ -324,7 +411,7 @@ function Cloud(props: CloudProps) {
           opacity={1}
         />
       </mesh>
-      <mesh>
+      <mesh >
         <sphereGeometry args={[2 * cloudScale, 20, 20]} />
         <meshPhysicalMaterial
           color={cloudColor}
@@ -337,13 +424,10 @@ function Cloud(props: CloudProps) {
         />
       </mesh>
       <Precipitation weather={weather} currentWeather={props.currentWeather} />
-      {currentWeather.thunder?<Lightning/>: null}
+      {currentWeather.thunder ? <Lightning /> : null}
     </group>
   );
 }
-
-
-
 
 function CloudCluster(props: CloudProps) {
   const weather = props.weather;
@@ -361,7 +445,7 @@ function CloudCluster(props: CloudProps) {
       color={"white"}
     />
   ));
-  return <group position={position}>{clouds}</group>;
+  return <group position={position} >{clouds}</group>;
 }
 function Fog(props: {}) {
   // Cloud intensity 0.6
@@ -369,18 +453,17 @@ function Fog(props: {}) {
   const fogColor = "grey";
   const fogScale = getRandomInt(5, 15);
   const xPos = getRandomInt(-80, 80);
-  const yPos = getRandomInt(-7.5, 7.5   );
+  const yPos = getRandomInt(-7.5, 7.5);
   const zPos = getRandomInt(-80, 80);
   const position = new Vector3(xPos, yPos, zPos);
 
   return (
     <group position={position}>
-   
       <mesh>
         <sphereGeometry args={[2 * fogScale, 20, 20]} />
         <meshPhysicalMaterial
           color={fogColor}
-/*           metalness={0.5}
+          /*           metalness={0.5}
           roughness={0.5} */
           emissive={fogColor}
           emissiveIntensity={1}
@@ -388,7 +471,6 @@ function Fog(props: {}) {
           transparent
         />
       </mesh>
-    
     </group>
   );
 }
@@ -403,34 +485,31 @@ function FogCluster(props: {}) {
   const fogColor = "grey";
 
   const fogs = Array.from({ length: numberOfFogs }, (_, index) => (
-    <group position={position}>
-     <Fog/>
+    <group position={position} >
+      <Fog />
     </group>
   ));
-  return (
-    <group position={position}>
-     {fogs}
-    </group>
-  );
+  return <group position={position}>{fogs}</group>;
 }
 
 const CanvasMain: React.FC<Props> = (props: Props) => {
   const sun = props.sunData;
-  const weather = props.weatherData;
-  const currentHour = props.currentHour-5;
-  /*   console.dir(sun);
-  console.dir(weather);
-  console.dir(currentHour); */
-      const weatherSymbol = weather.symbol as keyof typeof weatherConfig;
-    const currentWeatherConfig = weatherConfig[weatherSymbol];
 
-/*   const currentWeatherConfig = weatherConfig["11"];
- */
-  console.dir(currentWeatherConfig);
-  const [sunAndMoon, setSunAndMoon] = useState({ type: "sun", position: 0 });
+  const weather = props.weatherData;
+
+  const currentHour =  props.currentHour;
+  const weatherSymbol = weather.symbol as keyof typeof weatherConfig;
+  const currentWeatherConfig = weatherConfig[weatherSymbol];
+  const [sunAndMoon, setSunAndMoon] = useState({
+    type: "sun",
+    position: 0,
+    dayTime: "dawn",
+  });
   const [day, setDay] = useState(true);
   const [bg, setBg] = useState("white");
   const [cameraFov, setCameraFov] = useState(45); // Initial FOV value
+  const [dayTime, setDayTime] = useState("dawn");
+  const [skyColor, setSkyColor] = useState("black");
 
   // Function to handle FOV change
   const handleFovChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -441,18 +520,60 @@ const CanvasMain: React.FC<Props> = (props: Props) => {
     position: new Vector3(-100, 0, -100), // Set the camera position
     rotation: new Euler(0, 0, 0), // Set the camera rotation
   };
-
+  
+  function updateDayTime() {
+    let time = "time";
+    if (currentHour >= sun.dawn && currentHour < sun.sunrise+2) {
+      time = "dawn";
+      setSkyColor("pink");
+      setDayTime("dawn");
+      return time;
+    }
+    if (currentHour >= sun.sunrise && currentHour < sun.sunset - 1) {
+      time = "sunrise";
+      setDayTime("sunrise");
+      setSkyColor(currentWeatherConfig.dayColor);
+      return time;
+    }
+    if (currentHour >= sun.sunset - 1 && currentHour < sun.dusk - 1) {
+      time = "sunset";
+      setDayTime("sunset");
+      setSkyColor(currentWeatherConfig.dayColor);
+      return time;
+    }
+    if (currentHour == sun.dusk - 1) {
+      time = "dusk";
+      setSkyColor("pink");
+      setDayTime("dusk");
+      return time;
+    } else {
+      time = "night";
+      setDayTime("night");
+      setSkyColor(currentWeatherConfig.nightColor);
+      return time;
+    }
+  }
   useEffect(() => {
     const sunMoveDegree = 180 / sun.dayLength;
     const moonMoveDegree = 180 / sun.nightLength;
     const sunMoveDegreeTotal = sunMoveDegree * (currentHour - sun.sunrise);
     const moonMoveDegreeTotal = moonMoveDegree * (currentHour - sun.dusk);
 
-    if (currentHour >= sun.sunrise && currentHour <= sun.dusk) {
-      setSunAndMoon({ type: "sun", position: sunMoveDegreeTotal });
+    let updateTime = updateDayTime();
+
+    if (currentHour >= sun.dawn && currentHour <= sun.dusk) {
+      setSunAndMoon({
+        type: "sun",
+        position: sunMoveDegreeTotal,
+        dayTime: updateTime,
+      });
       setDay(true);
     } else {
-      setSunAndMoon({ type: "moon", position: moonMoveDegreeTotal });
+      setSunAndMoon({
+        type: "moon",
+        position: moonMoveDegreeTotal,
+        dayTime: updateTime,
+      });
       setDay(false);
     }
   }, [currentHour, sun, weather]);
@@ -460,7 +581,6 @@ const CanvasMain: React.FC<Props> = (props: Props) => {
   const numberOfCloudCLusters = Math.ceil(
     currentWeatherConfig.cloudIntensity * 20
   );
-  console.dir(numberOfCloudCLusters);
   const totalCloudClusters = Array.from(
     { length: numberOfCloudCLusters },
     (_, index) => (
@@ -473,25 +593,25 @@ const CanvasMain: React.FC<Props> = (props: Props) => {
   );
 
   const CatModel: React.FC = () => {
-    const obj = useLoader(OBJLoader, './assets/cat.obj');
-  
+    const materials = useLoader(MTLLoader, "./assets/tree.mtl");
+    /*     const obj = useLoader(OBJLoader, './assets/tree.obj');
+     */ const obj = useLoader(OBJLoader, "./assets/tree.obj", (loader) => {
+      materials.preload();
+      loader.setMaterials(materials);
+    });
     obj.traverse((child: Object) => {
       if (child instanceof Mesh) {
         child.castShadow = true;
         child.receiveShadow = true;
+        /* child.material.color.set('#ff0000'); */
       }
     });
-    return <primitive object={obj} scale={0.4} castShadow />;
+    return <primitive object={obj} scale={1} castShadow />;
   };
-
 
   return (
     <Canvas
-      style={
-        day
-          ? { background: currentWeatherConfig.dayColor }
-          : { background: currentWeatherConfig.nightColor }
-      } // Sky Color
+      style={{ background: skyColor }} // Sky Color
       shadows
       shadow-map={2048}
       camera={{
@@ -500,41 +620,47 @@ const CanvasMain: React.FC<Props> = (props: Props) => {
         fov: cameraFov,
       }}
     >
-      
-           {currentWeatherConfig.fog ? (
-        <><FogCluster />
-          
-          <fog attach="fog" args={["rgba(80, 80, 80, 0.3)", 100, 300]} />
-        </>
-      ) : null}
-      <ambientLight intensity={0.2} />
-      <Spotlight sunAndMoon={sunAndMoon} />
-     {/*  <mesh castShadow position={[1, 10, 1]}>
+{/*       <Suspense fallback={null}>
+ */}        {currentWeatherConfig.fog ? (
+          <>
+            <FogCluster />
+
+            <fog attach="fog" args={["rgba(80, 80, 80, 0.3)", 100, 300]} />
+          </>
+        ) : null}
+        <ambientLight intensity={0.2} />
+        <Spotlight sunAndMoon={sunAndMoon} />
+        {/*  <mesh castShadow position={[1, 10, 1]}>
         <sphereGeometry args={[10, 20, 20]} />
         <meshPhysicalMaterial color="white" metalness={0.5} roughness={0.5} />
       </mesh> */}
-      <CatModel/>
-      <mesh position={[0, -400, 1]} receiveShadow>
-        <sphereGeometry args={[400, 50, 50]} />
-        <meshStandardMaterial
-          color={
-            "white"
-            /*   day
+        <CatModel />
+        <mesh position={[0, -400, 1]} receiveShadow>
+          <sphereGeometry args={[400, 50, 50]} />
+          <meshStandardMaterial
+            color={
+             currentWeatherConfig.groundColor
+              /*   day
               ? weatherConfig[weatherSymbol].dayColor
               : weatherConfig[weatherSymbol].nightColor */
-          }
-          side={THREE.DoubleSide}
+            }
+            side={THREE.DoubleSide}
+          />
+        </mesh>
+        {totalCloudClusters}
+        <Shadow />
+        <OrbitControls
+          target={new Vector3(0, 50, 0)}
+          minDistance={80} // Set the minimum distance the camera can be zoomed out 80
+          maxDistance={140} // Set the maximum distance the camera can be zoomed in 140
+          minPolarAngle={Math.PI / 2} // Set the minimum polar angle (vertical rotation) in radians
+          maxPolarAngle={Math.PI / 1.55} // Set the maximum polar angle (vertical rotation) in radians
         />
-      </mesh>
-      {totalCloudClusters}
-      <Shadow />
-      <OrbitControls
-        target={new Vector3(0, 30, 0)}
-        minDistance={80} // Set the minimum distance the camera can be zoomed out
-        maxDistance={140} // Set the maximum distance the camera can be zoomed in
-        minPolarAngle={Math.PI / 3} // Set the minimum polar angle (vertical rotation) in radians
-        maxPolarAngle={Math.PI / 1.8} // Set the maximum polar angle (vertical rotation) in radians
-      />
+   {/*    </Suspense> */}
+   {/*    <EffectComposer>
+      <Vignette eskil={false} offset={0.5} darkness={0.5} />
+
+  </EffectComposer> */}
     </Canvas>
   );
 };
