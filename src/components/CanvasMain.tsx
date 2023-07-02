@@ -327,21 +327,21 @@ function Precipitation(props: PrecipitationProps) {
   const precipitationConfig = {
     rain: {
       speed: 0.6,
-      color: "#618cdb",
-      opacity: rainIntensity * 2,
+      color: "rgb(66, 130, 249)",
+      opacity: 0.8,
       intensity: rainIntensity,
     },
     snow: {
       speed: 0.2,
       color: "white",
-      opacity: snowIntensity * 2,
+      opacity: 0.6,
       intensity: snowIntensity,
     },
   };
 
   const spawnPerciption =
-    getRandomIntNotFloor(0, 1) >=
-    precipitationConfig[precipitationType].intensity * 0.8
+    getRandomIntNotFloor(0, 1) <=
+    precipitationConfig[precipitationType].intensity * 0.2
       ? true
       : false;
 
@@ -403,7 +403,7 @@ function Cloud(props: CloudProps) {
   return (
     <group position={position}>
       <mesh>
-        <sphereGeometry args={[1 * cloudScale, 20, 20]} />
+        <sphereGeometry args={[1 * cloudScale, 5,5]} />
         <meshPhysicalMaterial
           color={cloudColor}
           metalness={0.5}
@@ -414,7 +414,7 @@ function Cloud(props: CloudProps) {
         />
       </mesh>
       <mesh>
-        <sphereGeometry args={[2 * cloudScale, 20, 20]} />
+        <sphereGeometry args={[2 * cloudScale, 15,15]} />
         <meshPhysicalMaterial
           color={cloudColor}
           metalness={0.5}
@@ -511,18 +511,23 @@ const CatModel: React.FC = () => {
 };
 
 const CanvasMain: React.FC<Props> = (props: Props) => {
-  const sun = props.sunData;
-
-  const weather = props.weatherData;
-
+  console.dir("render 3")
+ 
+  
   const currentHour = props.currentHour;
+
+  
+
 
   let currentWeatherConfig = weatherConfig[props.selectedWeather];
   if (props.selectedWeather == 27) {
-    currentWeatherConfig = weatherConfig[weather.symbol];
+    currentWeatherConfig = weatherConfig[props.weatherData.symbol];
   } else {
     currentWeatherConfig = weatherConfig[props.selectedWeather];
   }
+  useEffect(()=>{
+
+  },[props.weatherData, props.selectedWeather ])
 
   const [sunAndMoon, setSunAndMoon] = useState({
     type: "sun",
@@ -547,25 +552,25 @@ const CanvasMain: React.FC<Props> = (props: Props) => {
 
   function updateDayTime() {
     let time = "time";
-    if (currentHour >= sun.dawn && currentHour < sun.sunrise + 2) {
+    if (props.currentHour >= props.sunData.dawn && props.currentHour < props.sunData.sunrise + 2) {
       time = "dawn";
       setSkyColor("pink");
       setDayTime("dawn");
       return time;
     }
-    if (currentHour >= sun.sunrise && currentHour < sun.sunset - 1) {
+    if (props.currentHour >= props.sunData.sunrise && props.currentHour < props.sunData.sunset - 1) {
       time = "sunrise";
       setDayTime("sunrise");
       setSkyColor(currentWeatherConfig.dayColor);
       return time;
     }
-    if (currentHour >= sun.sunset - 1 && currentHour < sun.dusk - 1) {
+    if (props.currentHour >= props.sunData.sunset - 1 && props.currentHour < props.sunData.dusk - 1) {
       time = "sunset";
       setDayTime("sunset");
       setSkyColor(currentWeatherConfig.dayColor);
       return time;
     }
-    if (currentHour == sun.dusk - 1) {
+    if (props.currentHour == props.sunData.dusk - 1) {
       time = "dusk";
       setSkyColor("pink");
       setDayTime("dusk");
@@ -579,14 +584,14 @@ const CanvasMain: React.FC<Props> = (props: Props) => {
   }
   useEffect(() => {
     console.dir("render2")
-    const sunMoveDegree = 180 / sun.dayLength;
-    const moonMoveDegree = 180 / sun.nightLength;
-    const sunMoveDegreeTotal = sunMoveDegree * (currentHour - sun.sunrise);
-    const moonMoveDegreeTotal = moonMoveDegree * (currentHour - sun.dusk);
+    const sunMoveDegree = 180 / props.sunData.dayLength;
+    const moonMoveDegree = 180 / props.sunData.nightLength;
+    const sunMoveDegreeTotal = sunMoveDegree * (props.currentHour - props.sunData.sunrise);
+    const moonMoveDegreeTotal = moonMoveDegree * (props.currentHour - props.sunData.dusk);
 
     let updateTime = updateDayTime();
 
-    if (currentHour >= sun.dawn && currentHour <= sun.dusk) {
+    if (props.currentHour >= props.sunData.dawn && props.currentHour <= props.sunData.dusk) {
       setSunAndMoon({
         type: "sun",
         position: sunMoveDegreeTotal,
@@ -604,6 +609,7 @@ const CanvasMain: React.FC<Props> = (props: Props) => {
   }, [
     props.currentHour,
     props.sunData,
+    props.weatherData, props.selectedWeather
    
   ]);
 
@@ -655,7 +661,7 @@ const CanvasMain: React.FC<Props> = (props: Props) => {
       </mesh>
       {Array.from({ length: totalCloudClusters }, (_, index) => (
       <CloudCluster
-        weather={weather}
+        weather={props.weatherData}
         currentWeather={currentWeatherConfig}
         color="white"
         key={index}

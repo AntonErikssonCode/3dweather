@@ -5,6 +5,7 @@ import CanvasMain from "./components/CanvasMain";
 import { setInterval } from "timers/promises";
 import weatherConfig from "./weatherConfig";
 import SelectWeather from "./components/SelectWeather";
+
 function App() {
   const [weatherEndpoint, setWeatherEndpoint] = useState(
     "https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/16.158/lat/58.5812/data.json"
@@ -51,11 +52,12 @@ function App() {
     // Run the updateStates function once every minute
     const interval = window.setInterval(() => {
       updateStates();
-    }, 60000);
+    }, 60000 * 5 );
 
     // Clear the interval when the component is unmounted or the dependencies change
     return () => clearInterval(interval);
   }, []);
+
   function updateStates() {
     if ("geolocation" in navigator) {
       // Geolocation is supported
@@ -85,13 +87,7 @@ function App() {
     }
   }
 
-  /*  useEffect(() => {
-    console.dir(" ")
 
-
-    console.log(weatherData);
-  }, [weatherData]);
- */
   function getCurrentTime(): string {
     const now = new Date();
     const options: Intl.DateTimeFormatOptions = {
@@ -223,9 +219,7 @@ function App() {
 
       
        <CanvasMain handleClose={handleClose}  sunData={sunData} weatherData={weatherData} currentHour={currentHour} selectedWeather={selectedWeather}/>
-       
    
-
    
     </div>
   );
