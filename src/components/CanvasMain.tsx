@@ -401,8 +401,8 @@ function Cloud(props: CloudProps) {
   const position = new Vector3(xPos, yPos, zPos);
   const cloudOpacity = getRandomInt(0.7, 0.9);
   return (
-    <group position={position} >
-{/*       <mesh >
+    <group position={position}>
+      {/*       <mesh >
         <sphereGeometry args={[1 * cloudScale, 5,5]} />
         <meshPhysicalMaterial
           color={cloudColor}
@@ -414,7 +414,7 @@ function Cloud(props: CloudProps) {
         />
       </mesh> */}
       <mesh>
-        <sphereGeometry args={[2 * cloudScale, 15,15]} />
+        <sphereGeometry args={[2 * cloudScale, 15, 15]} />
         <meshPhysicalMaterial
           color={cloudColor}
           metalness={0.5}
@@ -511,29 +511,25 @@ const CatModel: React.FC = () => {
 };
 
 const CanvasMain: React.FC<Props> = (props: Props) => {
- 
-  
   const currentHour = props.currentHour;
-console.log(weatherConfig)
-console.log(props.selectedWeather)
   
-  const [currentWeatherConfig, setCurrentWeatherConfig] = useState(weatherConfig[props.weatherData.symbol-1]);
-  console.log(currentWeatherConfig)
+  const [currentWeatherConfig, setCurrentWeatherConfig] = useState(
+    weatherConfig[props.weatherData.symbol - 1]
+  );
 
-  function handleUpdateWeather(){
+  function handleUpdateWeather() {
     if (props.selectedWeather == 27) {
-      setCurrentWeatherConfig(weatherConfig[props.weatherData.symbol-1]);
-      console.dir("selected main")
-     
-      } else {
-        setCurrentWeatherConfig(weatherConfig[props.selectedWeather]);
-        console.dir("selected " +props.selectedWeather )
-      }
+      setCurrentWeatherConfig(weatherConfig[props.weatherData.symbol - 1]);
+      console.dir("selected main");
+    } else {
+      setCurrentWeatherConfig(weatherConfig[props.selectedWeather]);
+      console.dir("selected " + props.selectedWeather);
+    }
   }
 
-  useEffect(()=>{
-    handleUpdateWeather()
-  },[props.weatherData, props.selectedWeather ])
+  useEffect(() => {
+    handleUpdateWeather();
+  }, [props.weatherData, props.selectedWeather]);
 
   const [sunAndMoon, setSunAndMoon] = useState({
     type: "sun",
@@ -558,19 +554,28 @@ console.log(props.selectedWeather)
 
   function updateDayTime() {
     let time = "time";
-    if (props.currentHour >= props.sunData.dawn && props.currentHour < props.sunData.sunrise + 2) {
+    if (
+      props.currentHour >= props.sunData.dawn &&
+      props.currentHour < props.sunData.sunrise + 2
+    ) {
       time = "dawn";
       setSkyColor("pink");
       setDayTime("dawn");
       return time;
     }
-    if (props.currentHour >= props.sunData.sunrise && props.currentHour < props.sunData.sunset - 1) {
+    if (
+      props.currentHour >= props.sunData.sunrise &&
+      props.currentHour < props.sunData.sunset - 1
+    ) {
       time = "sunrise";
       setDayTime("sunrise");
       setSkyColor(currentWeatherConfig.dayColor);
       return time;
     }
-    if (props.currentHour >= props.sunData.sunset - 1 && props.currentHour < props.sunData.dusk - 1) {
+    if (
+      props.currentHour >= props.sunData.sunset - 1 &&
+      props.currentHour < props.sunData.dusk - 1
+    ) {
       time = "sunset";
       setDayTime("sunset");
       setSkyColor(currentWeatherConfig.dayColor);
@@ -591,12 +596,17 @@ console.log(props.selectedWeather)
   useEffect(() => {
     const sunMoveDegree = 180 / props.sunData.dayLength;
     const moonMoveDegree = 180 / props.sunData.nightLength;
-    const sunMoveDegreeTotal = sunMoveDegree * (props.currentHour - props.sunData.sunrise);
-    const moonMoveDegreeTotal = moonMoveDegree * (props.currentHour - props.sunData.dusk);
+    const sunMoveDegreeTotal =
+      sunMoveDegree * (props.currentHour - props.sunData.sunrise);
+    const moonMoveDegreeTotal =
+      moonMoveDegree * (props.currentHour - props.sunData.dusk);
 
     let updateTime = updateDayTime();
 
-    if (props.currentHour >= props.sunData.dawn && props.currentHour <= props.sunData.dusk) {
+    if (
+      props.currentHour >= props.sunData.dawn &&
+      props.currentHour <= props.sunData.dusk
+    ) {
       setSunAndMoon({
         type: "sun",
         position: sunMoveDegreeTotal,
@@ -614,8 +624,9 @@ console.log(props.selectedWeather)
   }, [
     props.currentHour,
     props.sunData,
-    props.weatherData, props.selectedWeather,
-    currentWeatherConfig
+    props.weatherData,
+    props.selectedWeather,
+    currentWeatherConfig,
   ]);
 
   const [totalCloudClusters, setTotalCloudClusters] = useState(0);
@@ -626,8 +637,6 @@ console.log(props.selectedWeather)
     );
     setTotalCloudClusters(numberOfCloudClusters);
   }, [props.weatherData, props.selectedWeather, currentWeatherConfig]);
-  
-  
 
   return (
     <Canvas
@@ -653,24 +662,16 @@ console.log(props.selectedWeather)
       <CatModel />
       <mesh position={[0, -400, 1]} receiveShadow>
         <sphereGeometry args={[400, 50, 50]} />
-        <meshStandardMaterial
-          color={
-            currentWeatherConfig.groundColor
-            /*   day
-              ? weatherConfig[weatherSymbol].dayColor
-              : weatherConfig[weatherSymbol].nightColor */
-          }
-      
-        />
+        <meshStandardMaterial color={currentWeatherConfig.groundColor} />
       </mesh>
       {Array.from({ length: totalCloudClusters }, (_, index) => (
-      <CloudCluster
-        weather={props.weatherData}
-        currentWeather={currentWeatherConfig}
-        color="white"
-        key={index}
-      />
-    ))}
+        <CloudCluster
+          weather={props.weatherData}
+          currentWeather={currentWeatherConfig}
+          color="white"
+          key={index}
+        />
+      ))}
       <Shadow />
       <OrbitControls
         target={new Vector3(0, 35, 0)}
@@ -678,7 +679,7 @@ console.log(props.selectedWeather)
         maxDistance={160} // Set the maximum distance the camera can be zoomed in 140
         minPolarAngle={Math.PI / 2} // Set the minimum polar angle (vertical rotation) in radians
         maxPolarAngle={Math.PI / 1.65} // Set the maximum polar angle (vertical rotation) in radians
-        enablePan={false} 
+        enablePan={false}
       />
     </Canvas>
   );
