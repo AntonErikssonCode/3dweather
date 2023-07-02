@@ -521,7 +521,7 @@ const CanvasMain: React.FC<Props> = (props: Props) => {
 
   let currentWeatherConfig = weatherConfig[props.selectedWeather];
   if (props.selectedWeather == 27) {
-    currentWeatherConfig = weatherConfig[props.weatherData.symbol];
+    currentWeatherConfig = weatherConfig[props.weatherData.symbol-1];
   } else {
     currentWeatherConfig = weatherConfig[props.selectedWeather];
   }

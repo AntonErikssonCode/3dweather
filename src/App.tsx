@@ -204,7 +204,7 @@ function App() {
 
 
 
-
+  console.dir(weatherData)
 
 
   return (

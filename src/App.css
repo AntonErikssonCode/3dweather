@@ -52,6 +52,7 @@
 }
 
 .temp-container {
+  user-select: none;
   width: 140px;
   background-color: rgba(247, 247, 247, 0.6); /* Adjust the alpha value for transparency */
   height: auto;
