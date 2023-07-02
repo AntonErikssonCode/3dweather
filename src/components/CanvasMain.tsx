@@ -511,7 +511,6 @@ const CatModel: React.FC = () => {
 };
 
 const CanvasMain: React.FC<Props> = (props: Props) => {
-  console.dir("render 3")
  
   
   const currentHour = props.currentHour;
@@ -522,6 +521,7 @@ const CanvasMain: React.FC<Props> = (props: Props) => {
   let currentWeatherConfig = weatherConfig[props.selectedWeather];
   if (props.selectedWeather == 27) {
     currentWeatherConfig = weatherConfig[props.weatherData.symbol-1];
+ 
   } else {
     currentWeatherConfig = weatherConfig[props.selectedWeather];
   }
@@ -583,7 +583,6 @@ const CanvasMain: React.FC<Props> = (props: Props) => {
     }
   }
   useEffect(() => {
-    console.dir("render2")
     const sunMoveDegree = 180 / props.sunData.dayLength;
     const moonMoveDegree = 180 / props.sunData.nightLength;
     const sunMoveDegreeTotal = sunMoveDegree * (props.currentHour - props.sunData.sunrise);
@@ -616,7 +615,6 @@ const CanvasMain: React.FC<Props> = (props: Props) => {
   const [totalCloudClusters, setTotalCloudClusters] = useState(0);
 
   useEffect(() => {
-    console.dir("render")
     const numberOfCloudClusters = Math.ceil(
       currentWeatherConfig.cloudIntensity * 20
     );
