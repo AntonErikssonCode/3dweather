@@ -654,7 +654,7 @@ const CanvasMain: React.FC<Props> = (props: Props) => {
               ? weatherConfig[weatherSymbol].dayColor
               : weatherConfig[weatherSymbol].nightColor */
           }
-          side={THREE.DoubleSide}
+      
         />
       </mesh>
       {Array.from({ length: totalCloudClusters }, (_, index) => (
@@ -667,11 +667,12 @@ const CanvasMain: React.FC<Props> = (props: Props) => {
     ))}
       <Shadow />
       <OrbitControls
-        target={new Vector3(0, 40, 0)}
-        minDistance={80} // Set the minimum distance the camera can be zoomed out 80
-        maxDistance={140} // Set the maximum distance the camera can be zoomed in 140
+        target={new Vector3(0, 35, 0)}
+        minDistance={70} // Set the minimum distance the camera can be zoomed out 80
+        maxDistance={160} // Set the maximum distance the camera can be zoomed in 140
         minPolarAngle={Math.PI / 2} // Set the minimum polar angle (vertical rotation) in radians
-        maxPolarAngle={Math.PI / 1.60} // Set the maximum polar angle (vertical rotation) in radians
+        maxPolarAngle={Math.PI / 1.65} // Set the maximum polar angle (vertical rotation) in radians
+        enablePan={false} 
       />
     </Canvas>
   );
