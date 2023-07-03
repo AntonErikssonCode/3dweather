@@ -116,7 +116,7 @@ function App() {
       { value: seconds },
     ] = formatter.formatToParts(now);
     setCurrentHour(parseInt(hours));
- /*  setCurrentHour(2); */
+  /* setCurrentHour(18); */
     const newString = `${year}-${month}-${day}T${hours}:00:00Z`;
     return newString;
   }

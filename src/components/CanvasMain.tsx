@@ -507,7 +507,7 @@ const CatModel: React.FC = () => {
       /* child.material.color.set('#ff0000'); */
     }
   });
-  return <primitive object={obj} scale={1} castShadow />;
+  return <primitive object={obj} scale={1.5} castShadow />;
 };
 
 const CanvasMain: React.FC<Props> = (props: Props) => {
