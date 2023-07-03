@@ -213,7 +213,7 @@ console.dir(weatherData)
       <div className="info-container">
       <div className="temp-container">
         
-      <h2>{weatherData.temp+1}&deg;C</h2>
+      <h2>{weatherData.temp}&deg;C</h2>
       </div>
       <SelectWeather  weatherData={weatherData}handleSelectWeather={handleSelectWeather} selectedWeather={selectedWeather} handleClick={handleClick} expanded={expanded}/>
       </div>
