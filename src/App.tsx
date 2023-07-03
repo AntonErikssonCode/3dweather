@@ -24,7 +24,7 @@ function App() {
   const [currentHour, setCurrentHour] = useState<number>(0);
   const [selectedWeather, setSelectedWeather] = useState<any>(27);
   const [expanded, setExpanded] = useState(false);
-
+  const [geopos, setGeoPos] = useState(false);
  
   const handleClick = useCallback(() => {
     setExpanded(true);
@@ -75,16 +75,20 @@ function App() {
           setPos({ longitude: longitude, latitude: latitude });
           setWeatherEndpoint(newWeatherEndpoint);
           setSunEndpoint(newSunEnpoint);
+          setGeoPos(true)
         },
         (error) => {
           // Handle geolocation error
           console.error("Error getting geolocation:", error.message);
           window.alert("You must allow geolocation for this app to work :/");
+          console.dir(weatherData)
+          setGeoPos(false)
         }
       );
     } else {
       // Geolocation is not supported
       console.error("Geolocation is not supported by this browser");
+      setGeoPos(false)
     }
   }
 
@@ -205,15 +209,16 @@ function App() {
 
 
 
-console.dir(weatherData)
+
 
 
   return (
     <div style={{ width: "100vw", height: "100vh", overflow:"hidden" }}>
+     
       <div className="info-container">
       <div className="temp-container">
-        
-      <h2>{weatherData.temp}&deg;C</h2>
+      {geopos? <h2>{weatherData.temp}&deg;C</h2>:  <h2 className="small-text">Check Location <br></br> Settings</h2>}  
+     
       </div>
       <SelectWeather  weatherData={weatherData}handleSelectWeather={handleSelectWeather} selectedWeather={selectedWeather} handleClick={handleClick} expanded={expanded}/>
       </div>
