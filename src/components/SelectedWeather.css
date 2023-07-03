@@ -91,6 +91,7 @@ transition: all 0.1s ease-out;
   padding-left: 1rem;
 }
 .active{
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.5); /* Adjust the values for shadow size and opacity */
 
   font-weight: bold;
   font-size: 1.2rem;

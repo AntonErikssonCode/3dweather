@@ -341,7 +341,7 @@ function Precipitation(props: PrecipitationProps) {
 
   const spawnPerciption =
     getRandomIntNotFloor(0, 1) <=
-    precipitationConfig[precipitationType].intensity * 0.2
+    precipitationConfig[precipitationType].intensity * 0.4
       ? true
       : false;
 

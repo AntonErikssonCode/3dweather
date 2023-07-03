@@ -719,7 +719,7 @@ const weatherConfig = [
   },
  {
     name: "Light sleet",
-    dayColor: "#D3E1F0",
+    dayColor: "#A0BFD2",
     nightColor: "#46546C",
     cloudColor: "#EEEEEE",
     cloudy: true,
@@ -763,7 +763,7 @@ const weatherConfig = [
   },
  {
     name: "Light snowfall",
-    dayColor: "#D3E1F0",
+    dayColor: "#7C9AB1",
     nightColor: "#46546C",
     cloudColor: "#EEEEEE",
     cloudy: true,
